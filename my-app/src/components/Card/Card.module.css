@@ -1,0 +1,32 @@
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.body {
+  padding: var(--space-6);
+}
+
+.hasTitle .body {
+  padding-top: var(--space-4);
+}
+
+.header {
+  padding: var(--space-4) var(--space-6) 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.footer {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-neutral-50);
+}

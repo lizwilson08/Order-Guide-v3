@@ -1,0 +1,112 @@
+/* Design tokens - single source of truth */
+
+:root {
+  /* Colors */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-muted: #dbeafe;
+  --color-secondary: #64748b;
+  --color-secondary-hover: #475569;
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
+  --color-success: #16a34a;
+  --color-success-muted: #dcfce7;
+  --color-warning: #ca8a04;
+  --color-warning-muted: #fef9c3;
+  --color-error: #dc2626;
+  --color-error-muted: #fee2e2;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-text-primary: #0f172a;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+
+  /* Button (screenshot style: dark primary, light secondary, ghost underlined) */
+  --button-primary-bg: #1a1a1a;
+  --button-primary-bg-hover: #333333;
+  --button-primary-bg-active: #666666;
+  --button-primary-text: #ffffff;
+  --button-secondary-bg: #f0f0f0;
+  --button-secondary-bg-hover: #e0e0e0;
+  --button-secondary-bg-active: #d0d0d0;
+  --button-secondary-text: #333333;
+  --button-ghost-text: #1a1a1a;
+  --button-ghost-text-hover: #333333;
+  --button-ghost-text-active: #666666;
+  --button-disabled-bg-primary: #cccccc;
+  --button-disabled-bg-secondary: #ebebeb;
+  --button-disabled-text: #aaaaaa;
+
+  /* Typography – Cash Sans, then system fallbacks */
+  --font-sans: "Cash Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
+  /* Typography scale – headings and body (px) */
+  --font-size-h1: 25px;
+  --font-size-h2: 19px;
+  --font-size-h3: 16px;
+  --font-size-body: 16px;
+  --font-size-body-sm: 14px;
+  --font-size-body-xs: 12px;
+  --font-size-label: 14px;
+  /* Legacy scale (for components that reference these) */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 19px;
+  --font-size-3xl: 25px;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing (4px base) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface: #1e293b;
+    --color-surface-elevated: #334155;
+    --color-text-primary: #f8fafc;
+    --color-text-muted: #94a3b8;
+    --color-border: #334155;
+    --color-neutral-50: #0f172a;
+    --color-neutral-100: #1e293b;
+    --color-primary-muted: #1e3a5f;
+    --color-success-muted: #14532d;
+    --color-warning-muted: #713f12;
+    --color-error-muted: #7f1d1d;
+  }
+}

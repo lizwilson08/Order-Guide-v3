@@ -1,0 +1,51 @@
+/**
+ * Cash Sans – self-hosted from public/fonts/CashSans_WOFF2/
+ */
+
+@font-face {
+  font-family: "Cash Sans";
+  src: url("/fonts/CashSans_WOFF2/CashSans-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cash Sans";
+  src: url("/fonts/CashSans_WOFF2/CashSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cash Sans";
+  src: url("/fonts/CashSans_WOFF2/CashSans-RegularItl.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cash Sans";
+  src: url("/fonts/CashSans_WOFF2/CashSans-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cash Sans";
+  src: url("/fonts/CashSans_WOFF2/CashSans-Semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cash Sans";
+  src: url("/fonts/CashSans_WOFF2/CashSans-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}

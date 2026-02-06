@@ -1,0 +1,145 @@
+.page {
+  min-height: 100vh;
+  padding: var(--space-8);
+}
+
+.header {
+  margin-bottom: var(--space-8);
+}
+
+.header h1 {
+  margin-bottom: var(--space-1);
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nav a {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.main {
+  max-width: 48rem;
+}
+
+.section {
+  margin-bottom: var(--space-12);
+  scroll-margin-top: var(--space-4);
+}
+
+.section h2 {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.demo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.demo .row + .row {
+  margin-top: 0;
+}
+
+.captionBlock {
+  display: block;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-1);
+}
+.captionBlock:first-child {
+  margin-top: 0;
+}
+
+.demo input[type="text"],
+.demo input[type="number"],
+.demo select {
+  max-width: 20rem;
+}
+
+.demo [class*="Card"] {
+  max-width: 24rem;
+}
+
+/* Dropdown button (select styled as button with chevron) */
+.dropdownButtonWrap {
+  width: fit-content;
+}
+
+.dropdownButtonWrap select {
+  width: auto !important;
+  min-width: 4rem;
+  box-sizing: content-box;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("/images/icons/chevron-down-button.png");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px 12px;
+  padding: calc(var(--space-2) + 2px) 22px calc(var(--space-2) + 3px) var(--space-4);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdownButtonWrap select:focus {
+  outline: none;
+}
+
+.dropdownButtonWrap select option {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+/* Dropdown button variants */
+.dropdownButtonWrap select.dropdownPrimary {
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+}
+.dropdownButtonWrap select.dropdownPrimary:hover {
+  background-color: var(--button-primary-bg-hover);
+}
+.dropdownButtonWrap select.dropdownPrimary:active {
+  background-color: var(--button-primary-bg-active);
+}
+
+.dropdownButtonWrap select.dropdownSecondary {
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+}
+.dropdownButtonWrap select.dropdownSecondary:hover {
+  background-color: var(--button-secondary-bg-hover);
+}
+.dropdownButtonWrap select.dropdownSecondary:active {
+  background-color: var(--button-secondary-bg-active);
+}
+
+/* Dropdown button sizes */
+.dropdownButtonWrap select.dropdownSmall {
+  padding: var(--space-1) 22px var(--space-1) var(--space-3);
+}
+.dropdownButtonWrap select.dropdownMedium {
+  padding: calc(var(--space-2) + 2px) 22px calc(var(--space-2) + 3px) var(--space-4);
+}
+.dropdownButtonWrap select.dropdownLarge {
+  padding: var(--space-3) 22px var(--space-3) var(--space-6);
+}

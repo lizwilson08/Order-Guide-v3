@@ -1,0 +1,278 @@
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.headerRow {
+  /* first row of table when expanded: ingredient + column headers */
+}
+
+.headerIngredientCell {
+  vertical-align: middle;
+  padding: 0 0 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.headerIngredient {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.chevronIcon {
+  width: 40px;
+  height: 40px;
+  display: block;
+  object-fit: contain;
+}
+
+.ingredientImage,
+.ingredientImagePlaceholder {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.ingredientImagePlaceholder {
+  background-color: var(--color-neutral-200);
+}
+
+.ingredientName {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0;
+  text-decoration: none;
+}
+
+.body {
+  padding: 0;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  padding: 12px;
+  padding-bottom: 12px;
+}
+
+.table {
+  width: 100%;
+  min-width: 1000px;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 14px;
+}
+
+.table th {
+  text-align: left;
+  padding: calc(var(--space-3) * 0.75) 0 calc(var(--space-2) * 0.75);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table th.columnHeader {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.table th.colVendor,
+.table th.colRight,
+.table th.colPriceChange,
+.table th.colActions {
+  padding: calc(var(--space-4) * 0.75) 0 calc(var(--space-2) * 0.75);
+}
+
+.table thead tr.headerRow th {
+  padding-top: 0;
+  vertical-align: middle;
+}
+
+.colCheckbox {
+  width: 40px;
+  vertical-align: middle;
+}
+
+.colProduct {
+  width: 40%;
+  min-width: 220px;
+}
+.colVendor {
+  width: 18%;
+  min-width: 100px;
+}
+.colRight {
+  width: 18%;
+  min-width: 120px;
+}
+
+.colPriceChange {
+  width: 18%;
+  min-width: 140px;
+}
+
+.colActions {
+  width: 48px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.table th.colActions {
+  padding: calc(var(--space-4) * 0.75) 0;
+}
+
+.table td {
+  padding: calc(var(--space-4) * 0.75) 0;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+  font-size: 14px;
+  font-weight: var(--font-weight-normal);
+  text-align: left;
+}
+
+.table td.colProduct {
+  padding-left: 52px; /* align with header image: chevron 40px + gap 12px */
+}
+
+.table tbody tr td.colProduct:not(:first-child) {
+  padding-left: 12px; /* product column starts after 40px checkbox; 12px lines up with header image */
+}
+
+.table td.colActions {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.productNameCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.productNameRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.productName {
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+.productId {
+  font-size: var(--font-size-body-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-normal);
+}
+
+.vendorPrimary {
+  color: var(--color-text-primary);
+}
+
+.priceMain {
+  display: block;
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+}
+
+.priceSub {
+  display: block;
+  font-size: var(--font-size-body-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-normal);
+  margin-top: var(--space-1);
+}
+
+.priceChangeCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.priceChangePrimaryBest {
+  display: block;
+  font-size: 14px;
+  font-weight: var(--font-weight-normal);
+  color: var(--color-success);
+}
+
+.priceChangePrimaryAbove {
+  display: block;
+  font-size: 14px;
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+}
+
+.priceChangeSecondaryBest {
+  display: block;
+  font-size: var(--font-size-body-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-success);
+}
+
+.priceChangeSecondaryAbove {
+  display: block;
+  font-size: var(--font-size-body-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+}
+
+.actionIcon {
+  width: 40px;
+  height: 40px;
+  display: block;
+}
+
+.actionButton,
+.editButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.actionButton:hover,
+.editButton:hover {
+  color: var(--color-text-primary);
+}
+

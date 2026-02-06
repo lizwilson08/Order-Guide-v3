@@ -1,0 +1,358 @@
+.page {
+  min-height: 100vh;
+  padding: 24px 24px var(--space-8) 24px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.02em;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.printButton {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.printIcon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
+}
+
+.actionsSelectWrap {
+  width: fit-content;
+  flex-shrink: 0;
+}
+
+/* Actions dropdown: secondary button style + chevron-down-button icon */
+.actionsSelectWrap select {
+  width: 66px !important;
+  box-sizing: content-box;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  padding: calc(var(--space-2) + 2px) 22px calc(var(--space-2) + 3px) var(--space-4);
+  border-radius: 9999px;
+  border: none;
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("/images/icons/chevron-down-button.png");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px 12px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.actionsSelectWrap select:hover {
+  background-color: var(--button-secondary-bg-hover);
+}
+
+.actionsSelectWrap select:active {
+  background-color: var(--button-secondary-bg-active);
+}
+
+.actionsSelectWrap select:focus {
+  outline: none;
+}
+
+.actionsSelectWrap select option {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: var(--space-6);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tab {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  padding: var(--space-2) 0;
+  margin: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+.tab:hover {
+  color: var(--color-text-primary);
+}
+
+.tabActive {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.tabActive::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background-color: var(--color-text-primary);
+}
+
+/* Toolbar: search + filter pills */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+/* Search: collapsed = icon button (same pattern as filter buttons); expanded = full input */
+.searchTrigger {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.searchTrigger:hover {
+  border-color: var(--color-neutral-400);
+  background-color: var(--color-neutral-50);
+}
+
+.searchTriggerIcon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  object-fit: contain;
+}
+
+.searchWrap {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: 0 var(--space-3);
+  min-height: 40px;
+}
+
+.searchWrap > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.searchWrap:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-muted);
+}
+
+.searchIconImg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-right: var(--space-2);
+  object-fit: contain;
+}
+
+.searchWrap input {
+  border: none !important;
+  background: transparent !important;
+  padding: var(--space-2) 0 !important;
+  min-width: 0;
+}
+
+.searchWrap input:focus {
+  box-shadow: none !important;
+}
+
+.searchInput {
+  width: 100%;
+  padding-left: 0 !important;
+}
+
+.filterPills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: var(--space-2) var(--space-4);
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filterButtonVisual {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  pointer-events: none;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+}
+
+.filterButtonLabel {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-normal);
+}
+
+.filterButtonValue {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.filterButtonSelect {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+  font-size: var(--font-size-body-sm);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.filterButtonSelect:hover {
+  background: transparent;
+}
+
+.filterButtonSelect:focus {
+  outline: none;
+}
+
+.filterButtonSelect option {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+/* Main content - full width for product comparison groups */
+.main {
+  width: 100%;
+  max-width: none;
+}
+
+.section {
+  margin-bottom: var(--space-8);
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+/* Favorites: 12px between header and first product comparison group */
+.section:first-child .sectionHeader {
+  margin-bottom: 12px;
+}
+
+.section:first-child .sectionTitle {
+  padding-bottom: 0;
+}
+
+.sectionTitle {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0;
+  padding-bottom: var(--space-4);
+}
+
+.editLink {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.editLink:hover {
+  color: var(--color-secondary);
+}
+
+.sectionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.placeholder,
+.error {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  margin: 0;
+}
+
+.error {
+  color: var(--color-error);
+}
