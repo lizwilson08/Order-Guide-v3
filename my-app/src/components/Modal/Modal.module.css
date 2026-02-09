@@ -1,0 +1,32 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.panel {
+  background-color: var(--color-surface);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 64px);
+}
+
+/* Partial variant: center-top, 664px width, 32px from top */
+.partialTop {
+  margin-top: 32px;
+  width: 664px;
+  max-width: calc(100vw - 32px);
+}
+
+.panelContent {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}

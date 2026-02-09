@@ -361,8 +361,8 @@
 .ordersTopRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-6);
-  margin-bottom: var(--space-8);
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
 .ordersCard {

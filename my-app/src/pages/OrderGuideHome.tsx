@@ -4,7 +4,8 @@ import { api } from "../api/client";
 import type { Ingredient } from "../types";
 import type { ProductRow } from "../components/ProductComparisonGroup";
 import { ProductComparisonGroup } from "../components/ProductComparisonGroup";
-import { Button, Select, Heading, Input, Loading, Badge, Table } from "../components";
+import { Button, Select, Heading, Input, Loading, Badge, Table, EditFavoritesModal } from "../components";
+import type { FavoriteGroupItem } from "../components";
 import type { Column } from "../components/Table/Table";
 import styles from "./OrderGuideHome.module.css";
 
@@ -198,6 +199,10 @@ export function OrderGuideHome() {
   const [searchExpanded, setSearchExpanded] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  const [favorites, setFavorites] = useState<{ ingredientName: string; products: ProductRow[] }[]>(() => FAVORITES_DUMMY);
+  const [editFavoritesOpen, setEditFavoritesOpen] = useState(false);
+  const [modalSelectedIds, setModalSelectedIds] = useState<Set<string>>(new Set());
+
   useEffect(() => {
     api.ingredients
       .list()
@@ -240,6 +245,50 @@ export function OrderGuideHome() {
     );
     return [...withChickenDummy, ...ALL_PRODUCTS_EXTRA];
   }, [filteredForSearch]);
+
+  type GroupWithProducts = FavoriteGroupItem & { products: ProductRow[] };
+  const allGroups = useMemo((): GroupWithProducts[] => {
+    const fromAllProducts: GroupWithProducts[] = allProducts.map((item) => ({
+      id: String(item.ingredient.id),
+      ingredientName: item.ingredient.name,
+      ingredientImageUrl: getIngredientImageUrl(item.ingredient.name),
+      productCount: item.products.length,
+      products: item.products,
+    }));
+    const fromFavorites = favorites.filter(
+      (f) => !allProducts.some((a) => a.ingredient.name === f.ingredientName)
+    );
+    const fromFavoritesMapped: GroupWithProducts[] = fromFavorites.map((f) => ({
+      id: f.ingredientName,
+      ingredientName: f.ingredientName,
+      ingredientImageUrl: getIngredientImageUrl(f.ingredientName),
+      productCount: f.products.length,
+      products: f.products,
+    }));
+    return [...fromAllProducts, ...fromFavoritesMapped];
+  }, [allProducts, favorites]);
+
+  const favoriteIds = useMemo(
+    () =>
+      new Set(
+        favorites.map((f) => {
+          const g = allGroups.find((x) => x.ingredientName === f.ingredientName);
+          return g?.id ?? f.ingredientName;
+        })
+      ),
+    [favorites, allGroups]
+  );
+
+  function openEditFavorites() {
+    setModalSelectedIds(new Set(favoriteIds));
+    setEditFavoritesOpen(true);
+  }
+
+  function handleSaveFavorites() {
+    const selected = allGroups.filter((g) => modalSelectedIds.has(g.id));
+    setFavorites(selected.map((g) => ({ ingredientName: g.ingredientName, products: g.products })));
+    setEditFavoritesOpen(false);
+  }
 
   if (loading) {
     return (
@@ -397,12 +446,12 @@ export function OrderGuideHome() {
             <section className={styles.section}>
               <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>Favorites</h2>
-                <button type="button" className={styles.editLink} onClick={() => {}}>
+                <button type="button" className={styles.editLink} onClick={openEditFavorites}>
                   Edit
                 </button>
               </div>
               <div className={styles.sectionList}>
-                {FAVORITES_DUMMY.map((item, index) => (
+                {favorites.map((item, index) => (
                   <ProductComparisonGroup
                     key={`favorite-${item.ingredientName}-${index}`}
                     ingredientName={item.ingredientName}
@@ -439,6 +488,24 @@ export function OrderGuideHome() {
           </main>
         </>
       )}
+
+      <EditFavoritesModal
+        open={editFavoritesOpen}
+        onClose={() => setEditFavoritesOpen(false)}
+        groups={allGroups}
+        selectedIds={modalSelectedIds}
+        onSelectionChange={(id, selected) => {
+          setModalSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (selected) next.add(id);
+            else next.delete(id);
+            return next;
+          });
+        }}
+        onSave={handleSaveFavorites}
+        onEditGroup={() => {}}
+        onCreateGroup={() => {}}
+      />
 
       {activeTab === "orders" && (
         <main className={styles.main}>

@@ -23,3 +23,12 @@ export { Checkbox } from "./Checkbox/Checkbox";
 export type { CheckboxProps } from "./Checkbox/Checkbox";
 
 export { Loading } from "./Loading/Loading";
+
+export { Modal } from "./Modal/Modal";
+export type { ModalProps } from "./Modal/Modal";
+
+export { EditFavoritesModal } from "./EditFavoritesModal/EditFavoritesModal";
+export type {
+  EditFavoritesModalProps,
+  FavoriteGroupItem,
+} from "./EditFavoritesModal/EditFavoritesModal";
