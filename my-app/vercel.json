@@ -1,8 +1,11 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
+    { "source": "/images/:path*", "destination": "/images/:path*" },
+    { "source": "/assets/:path*", "destination": "/assets/:path*" },
+    { "source": "/fonts/:path*", "destination": "/fonts/:path*" },
     { "source": "/", "destination": "/index.html" },
     { "source": "/design-system", "destination": "/index.html" },
     { "source": "/ingredients/:id", "destination": "/index.html" },
