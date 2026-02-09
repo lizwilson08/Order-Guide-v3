@@ -157,7 +157,10 @@ export function OrderGuideHome() {
         );
       })
       .then(setIngredientsWithProducts)
-      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"))
+      .catch(() => {
+        // No API (e.g. Vercel preview): show page with dummy/empty data
+        setIngredientsWithProducts([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 

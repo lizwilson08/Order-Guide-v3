@@ -1,5 +1,18 @@
 const API_BASE = "/api";
 
+async function parseJson<T>(res: Response): Promise<T> {
+  const text = await res.text();
+  const contentType = res.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json") || text.trimStart().startsWith("<")) {
+    throw new Error("API unavailable");
+  }
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error("API unavailable");
+  }
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const { ...init } = options ?? {};
   const url = `${API_BASE}${path}`;
@@ -8,10 +21,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     headers: { "Content-Type": "application/json", ...init.headers },
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error((err as { error?: string }).error ?? res.statusText);
+    const err = await parseJson<{ error?: string }>(res).catch(() => ({ error: res.statusText }));
+    throw new Error(err?.error ?? res.statusText);
   }
-  return res.json() as Promise<T>;
+  return parseJson<T>(res);
 }
 
 export const api = {
