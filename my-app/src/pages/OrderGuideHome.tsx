@@ -1,9 +1,11 @@
 import { useEffect, useState, useMemo, useRef } from "react";
+import { Link } from "react-router-dom";
 import { api } from "../api/client";
 import type { Ingredient } from "../types";
 import type { ProductRow } from "../components/ProductComparisonGroup";
 import { ProductComparisonGroup } from "../components/ProductComparisonGroup";
-import { Button, Select, Heading, Input, Loading } from "../components";
+import { Button, Select, Heading, Input, Loading, Badge, Table } from "../components";
+import type { Column } from "../components/Table/Table";
 import styles from "./OrderGuideHome.module.css";
 
 const PRINT_ICON_SRC = "/images/icons/print.png";
@@ -131,10 +133,63 @@ const ALL_PRODUCTS_EXTRA: IngredientWithProducts[] = [
   },
 ];
 
+/** Active order row for Orders tab (vendor, product count, total, status) */
+interface ActiveOrderRow {
+  id: string;
+  vendorName: string;
+  productCount: number;
+  total: number;
+  status: "pending" | "draft";
+}
+const ACTIVE_ORDERS_DUMMY: ActiveOrderRow[] = [
+  { id: "1", vendorName: "JD Foods", productCount: 36, total: 287.17, status: "pending" },
+  { id: "2", vendorName: "Farmer Brothers", productCount: 80, total: 287.17, status: "draft" },
+  { id: "3", vendorName: "Sysco", productCount: 80, total: 287.17, status: "draft" },
+];
+
+/** Price change row for Orders tab */
+interface PriceChangeRow {
+  id: string;
+  productName: string;
+  packerId: string;
+  priceDisplay: string;
+  changePercent: number;
+  isIncrease: boolean;
+  imageUrl: string | null;
+}
+const PRICE_CHANGES_DUMMY: PriceChangeRow[] = [
+  { id: "1", productName: "Lettuce Spring Mix Sweet Pillow", packerId: "2321452", priceDisplay: "$22.47/cs", changePercent: 2.4, isIncrease: false, imageUrl: "/images/ingredients/Lettuce.png" },
+  { id: "2", productName: "Atlantic Salmon, Fillet, Frozen", packerId: "8845210", priceDisplay: "$12.50/lb", changePercent: 2.4, isIncrease: false, imageUrl: "/images/ingredients/Salmon.png" },
+  { id: "3", productName: "Shell Eggs, Large, Grade A, 15-dozen case", packerId: "4451234", priceDisplay: "$42.00/cs", changePercent: 4.6, isIncrease: true, imageUrl: "/images/ingredients/Eggs-brown.png" },
+];
+
+/** Past order row for Orders tab table */
+interface PastOrderRow {
+  id: number;
+  orderId: number;
+  status: string;
+  vendor: string;
+  total: string;
+}
+const PAST_ORDERS_DUMMY: PastOrderRow[] = [
+  { id: 125, orderId: 125, status: "Completed", vendor: "Sysco", total: "$1,289.00" },
+  { id: 124, orderId: 124, status: "Completed", vendor: "US Foods", total: "$938.00" },
+  { id: 123, orderId: 123, status: "Cancelled", vendor: "Meat Market", total: "$445.00" },
+  { id: 122, orderId: 122, status: "Completed", vendor: "Farmer Brothers", total: "$612.50" },
+  { id: 121, orderId: 121, status: "Completed", vendor: "Fishmonger", total: "$320.00" },
+];
+
+const PAST_ORDERS_COLUMNS: Column<PastOrderRow>[] = [
+  { key: "orderId", header: "Order" },
+  { key: "status", header: "Status" },
+  { key: "vendor", header: "Vendor" },
+  { key: "total", header: "Total" },
+];
+
 export function OrderGuideHome() {
   const [ingredientsWithProducts, setIngredientsWithProducts] = useState<IngredientWithProducts[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"profitability" | "orders">("profitability");
   const [searchQuery, setSearchQuery] = useState("");
   const [vendorFilter, setVendorFilter] = useState("all");
@@ -387,7 +442,67 @@ export function OrderGuideHome() {
 
       {activeTab === "orders" && (
         <main className={styles.main}>
-          <p className={styles.placeholder}>Orders view coming soon.</p>
+          <div className={styles.ordersTopRow}>
+            <section className={styles.ordersCard}>
+              <h3 className={styles.ordersCardTitle}>Active orders</h3>
+              <ul className={styles.activeOrdersList}>
+                {ACTIVE_ORDERS_DUMMY.map((row) => (
+                  <li key={row.id}>
+                    <Link to="/purchase-orders/1" className={styles.activeOrderLink}>
+                      <div className={styles.activeOrderMain}>
+                        <span className={styles.activeOrderVendor}>{row.vendorName}</span>
+                        <span className={styles.activeOrderMeta}>
+                          {row.productCount} products | ${row.total.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className={styles.activeOrderRight}>
+                        <Badge variant={row.status === "pending" ? "warning" : "default"}>
+                          {row.status === "pending" ? "Pending" : "Draft"}
+                        </Badge>
+                        <span className={styles.activeOrderArrow} aria-hidden>→</span>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <section className={styles.ordersCard}>
+              <div className={styles.ordersCardHeader}>
+                <h3 className={styles.ordersCardTitle}>Price changes</h3>
+                <button type="button" className={styles.ordersCardMore}>More</button>
+              </div>
+              <ul className={styles.priceChangesList}>
+                {PRICE_CHANGES_DUMMY.map((row) => (
+                  <li key={row.id} className={styles.priceChangeRow}>
+                    {row.imageUrl && (
+                      <img src={row.imageUrl} alt="" className={styles.priceChangeImg} />
+                    )}
+                    <div className={styles.priceChangeBody}>
+                      <span className={styles.priceChangeName}>{row.productName}</span>
+                      <span className={styles.priceChangePacker}>Packer | {row.packerId}</span>
+                      <span className={styles.priceChangePrice}>{row.priceDisplay}</span>
+                    </div>
+                    <span className={row.isIncrease ? styles.priceChangeUp : styles.priceChangeDown}>
+                      {row.changePercent}% {row.isIncrease ? "increase" : "decrease"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Past orders</h2>
+              <button type="button" className={styles.editLink} onClick={() => {}}>Edit</button>
+            </div>
+            <div className={styles.pastOrdersTableWrap}>
+              <Table<PastOrderRow>
+                columns={PAST_ORDERS_COLUMNS}
+                data={PAST_ORDERS_DUMMY}
+                keyExtractor={(row) => row.id}
+              />
+            </div>
+          </section>
         </main>
       )}
     </div>
