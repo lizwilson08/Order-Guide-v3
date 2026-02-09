@@ -356,3 +356,185 @@
 .error {
   color: var(--color-error);
 }
+
+/* Orders tab – two-column top */
+.ordersTopRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.ordersCard {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: var(--space-4);
+}
+
+.ordersCardTitle {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4);
+}
+
+.ordersCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.ordersCardHeader .ordersCardTitle {
+  margin: 0;
+}
+
+.ordersCardMore {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ordersCardMore:hover {
+  color: var(--color-secondary);
+}
+
+/* Active orders list – match Price changes spacing and styling */
+.activeOrdersList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.activeOrderLink {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.activeOrderLink:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.activeOrderMain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.activeOrderVendor {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.activeOrderMeta {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);
+}
+
+.activeOrderRight {
+  display: flex;
+  align-items: center;
+}
+
+/* Price changes list */
+.priceChangesList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.priceChangeRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.priceChangeImg {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.priceChangeBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.priceChangeName {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.priceChangePacker {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-xs);
+  color: var(--color-text-muted);
+}
+
+.priceChangePriceBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.priceChangePrice {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-primary);
+}
+
+.priceChangeDown {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-success);
+  flex-shrink: 0;
+}
+
+.priceChangeUp {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-error);
+  flex-shrink: 0;
+}
+
+/* Past orders table (inside .ordersCard) */
+.pastOrdersTableWrap {
+  margin-top: 0;
+}

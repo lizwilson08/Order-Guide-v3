@@ -459,7 +459,6 @@ export function OrderGuideHome() {
                         <Badge variant={row.status === "pending" ? "warning" : "default"}>
                           {row.status === "pending" ? "Pending" : "Draft"}
                         </Badge>
-                        <span className={styles.activeOrderArrow} aria-hidden>→</span>
                       </div>
                     </Link>
                   </li>
@@ -480,27 +479,28 @@ export function OrderGuideHome() {
                     <div className={styles.priceChangeBody}>
                       <span className={styles.priceChangeName}>{row.productName}</span>
                       <span className={styles.priceChangePacker}>Packer | {row.packerId}</span>
-                      <span className={styles.priceChangePrice}>{row.priceDisplay}</span>
                     </div>
-                    <span className={row.isIncrease ? styles.priceChangeUp : styles.priceChangeDown}>
-                      {row.changePercent}% {row.isIncrease ? "increase" : "decrease"}
-                    </span>
+                    <div className={styles.priceChangePriceBlock}>
+                      <span className={styles.priceChangePrice}>{row.priceDisplay}</span>
+                      <span className={row.isIncrease ? styles.priceChangeUp : styles.priceChangeDown}>
+                        {row.changePercent}% {row.isIncrease ? "increase" : "decrease"}
+                      </span>
+                    </div>
                   </li>
                 ))}
               </ul>
             </section>
           </div>
           <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Past orders</h2>
-              <button type="button" className={styles.editLink} onClick={() => {}}>Edit</button>
-            </div>
-            <div className={styles.pastOrdersTableWrap}>
-              <Table<PastOrderRow>
+            <div className={styles.ordersCard}>
+              <h3 className={styles.ordersCardTitle}>Past orders</h3>
+              <div className={styles.pastOrdersTableWrap}>
+                <Table<PastOrderRow>
                 columns={PAST_ORDERS_COLUMNS}
                 data={PAST_ORDERS_DUMMY}
                 keyExtractor={(row) => row.id}
               />
+              </div>
             </div>
           </section>
         </main>

@@ -169,6 +169,11 @@
   background-color: transparent;
   border: 1px solid var(--color-border);
   border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+.sidebarAccount:hover {
+  background-color: var(--color-neutral-200);
 }
 
 .sidebarAccountIcon {
@@ -193,24 +198,3 @@
   overflow-y: auto;
 }
 
-.floatingDesignSystem {
-  position: fixed;
-  bottom: var(--space-6);
-  right: var(--space-6);
-  padding: var(--space-2) var(--space-4);
-  font-family: var(--font-sans);
-  font-size: var(--font-size-body-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  box-shadow: var(--shadow-sm);
-  z-index: 1000;
-}
-
-.floatingDesignSystem:hover {
-  background-color: var(--color-neutral-100);
-  border-color: var(--color-neutral-400);
-}

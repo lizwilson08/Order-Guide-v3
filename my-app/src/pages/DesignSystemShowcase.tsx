@@ -84,6 +84,7 @@ export function DesignSystemShowcase() {
         <a href="#cards">Cards</a>
         <a href="#tables">Tables</a>
         <a href="#badges">Badges</a>
+        <a href="#order-rows">Order row styles</a>
         <a href="#product-comparison">Product comparison group</a>
         <a href="#loading">Loading</a>
       </nav>
@@ -307,6 +308,80 @@ export function DesignSystemShowcase() {
               <Badge variant="success">Best price</Badge>
               <Badge variant="warning">Warning</Badge>
               <Badge variant="error">Error</Badge>
+            </div>
+          </div>
+        </section>
+
+        <section id="order-rows" className={styles.section}>
+          <Heading as="h2">Order row styles</Heading>
+          <Caption className={styles.captionBlock}>
+            Row patterns used in the Orders tab: Active order row (primary + secondary text + badge) and Price change row (image + name + packer + price block with % change).
+          </Caption>
+          <div className={styles.demo}>
+            <Caption className={styles.captionBlock}>Active order row — permutations (badge: Pending, Draft, Completed)</Caption>
+            <div className={styles.orderRowCard}>
+              <div className={styles.activeOrderRow}>
+                <div className={styles.activeOrderRowMain}>
+                  <span className={styles.activeOrderRowPrimary}>JD Foods</span>
+                  <span className={styles.activeOrderRowSecondary}>36 products | $287.17</span>
+                </div>
+                <div className={styles.activeOrderRowRight}>
+                  <Badge variant="warning">Pending</Badge>
+                </div>
+              </div>
+              <div className={styles.activeOrderRow}>
+                <div className={styles.activeOrderRowMain}>
+                  <span className={styles.activeOrderRowPrimary}>Farmer Brothers</span>
+                  <span className={styles.activeOrderRowSecondary}>80 products | $287.17</span>
+                </div>
+                <div className={styles.activeOrderRowRight}>
+                  <Badge variant="default">Draft</Badge>
+                </div>
+              </div>
+              <div className={styles.activeOrderRow}>
+                <div className={styles.activeOrderRowMain}>
+                  <span className={styles.activeOrderRowPrimary}>Sysco</span>
+                  <span className={styles.activeOrderRowSecondary}>24 products | $156.00</span>
+                </div>
+                <div className={styles.activeOrderRowRight}>
+                  <Badge variant="success">Completed</Badge>
+                </div>
+              </div>
+            </div>
+            <Caption className={styles.captionBlock}>Price change row — % decrease (green) and % increase (red)</Caption>
+            <div className={styles.orderRowCard}>
+              <div className={styles.priceChangeRow}>
+                <img src="/images/ingredients/Lettuce.png" alt="" className={styles.priceChangeRowImg} />
+                <div className={styles.priceChangeRowBody}>
+                  <span className={styles.priceChangeRowName}>Lettuce Spring Mix Sweet Pillow</span>
+                  <span className={styles.priceChangeRowPacker}>Packer | 2321452</span>
+                </div>
+                <div className={styles.priceChangeRowPriceBlock}>
+                  <span className={styles.priceChangeRowPrice}>$22.47/cs</span>
+                  <span className={styles.priceChangeRowDown}>2.4% decrease</span>
+                </div>
+              </div>
+              <div className={styles.priceChangeRow}>
+                <img src="/images/ingredients/Eggs-brown.png" alt="" className={styles.priceChangeRowImg} />
+                <div className={styles.priceChangeRowBody}>
+                  <span className={styles.priceChangeRowName}>Shell Eggs, Large, Grade A, 15-dozen case</span>
+                  <span className={styles.priceChangeRowPacker}>Packer | 4451234</span>
+                </div>
+                <div className={styles.priceChangeRowPriceBlock}>
+                  <span className={styles.priceChangeRowPrice}>$42.00/cs</span>
+                  <span className={styles.priceChangeRowUp}>4.6% increase</span>
+                </div>
+              </div>
+              <div className={styles.priceChangeRow}>
+                <div className={styles.priceChangeRowBody}>
+                  <span className={styles.priceChangeRowName}>Product without image</span>
+                  <span className={styles.priceChangeRowPacker}>Packer | 9999999</span>
+                </div>
+                <div className={styles.priceChangeRowPriceBlock}>
+                  <span className={styles.priceChangeRowPrice}>$8.50/lb</span>
+                  <span className={styles.priceChangeRowDown}>1.2% decrease</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>

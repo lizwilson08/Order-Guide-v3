@@ -143,3 +143,118 @@
 .dropdownButtonWrap select.dropdownLarge {
   padding: var(--space-3) 22px var(--space-3) var(--space-6);
 }
+
+/* Order row styles (Active order + Price change) */
+.orderRowCard {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: var(--space-4);
+  max-width: 28rem;
+}
+
+/* Active order row */
+.activeOrderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+}
+
+.activeOrderRow + .activeOrderRow {
+  margin-top: var(--space-4);
+}
+
+.activeOrderRowMain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.activeOrderRowPrimary {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.activeOrderRowSecondary {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);
+}
+
+.activeOrderRowRight {
+  display: flex;
+  align-items: center;
+}
+
+/* Price change row */
+.priceChangeRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.priceChangeRow + .priceChangeRow {
+  margin-top: var(--space-4);
+}
+
+.priceChangeRowImg {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.priceChangeRowBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.priceChangeRowName {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.priceChangeRowPacker {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-xs);
+  color: var(--color-text-muted);
+}
+
+.priceChangeRowPriceBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.priceChangeRowPrice {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-primary);
+}
+
+.priceChangeRowDown {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-success);
+}
+
+.priceChangeRowUp {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-error);
+}

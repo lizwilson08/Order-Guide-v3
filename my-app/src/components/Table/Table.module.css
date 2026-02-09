@@ -18,8 +18,8 @@
 
 .table th {
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-muted);
-  background-color: var(--color-neutral-50);
+  color: var(--color-text-primary);
+  background-color: transparent;
   white-space: nowrap;
 }
 

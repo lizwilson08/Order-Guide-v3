@@ -72,10 +72,10 @@ function AppLayout() {
               <img src={ICONS.star} alt="" />
             </button>
           </div>
-          <div className={styles.sidebarAccount}>
+          <Link to="/design-system" className={styles.sidebarAccount} aria-label="Design System">
             <img src={ICONS.person} alt="" className={styles.sidebarAccountIcon} />
             <span className={styles.sidebarAccountName}>Square, Inc</span>
-          </div>
+          </Link>
         </div>
       </aside>
       <div className={styles.content}>
@@ -89,9 +89,6 @@ function AppLayout() {
           <Route path="/design-system" element={<DesignSystemShowcase />} />
         </Routes>
       </div>
-      <Link to="/design-system" className={styles.floatingDesignSystem} aria-label="Open Design System">
-        Design System
-      </Link>
     </div>
   );
 }
