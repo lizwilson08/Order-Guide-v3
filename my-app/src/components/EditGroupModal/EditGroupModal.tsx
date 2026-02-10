@@ -74,21 +74,19 @@ export function EditGroupModal({
     <Modal open={open} onClose={onClose} variant="partialTop" aria-label="Edit group">
       <div className={styles.modalContent}>
         <header className={styles.header}>
-          <div className={styles.headerLeft}>
-            <Button
-              type="button"
-              variant="secondary"
-              shape="circle"
-              onClick={onClose}
-              aria-label="Back"
-              className={styles.backButton}
-            >
-              <img src={BACK_ICON_SRC} alt="" className={styles.backIcon} />
-            </Button>
-            <Heading as="h1" className={styles.title}>
-              Edit group
-            </Heading>
-          </div>
+          <Button
+            type="button"
+            variant="secondary"
+            shape="circle"
+            onClick={onClose}
+            aria-label="Back"
+            className={styles.backButton}
+          >
+            <img src={BACK_ICON_SRC} alt="" className={styles.backIcon} />
+          </Button>
+          <Heading as="h1" className={styles.title}>
+            Edit group
+          </Heading>
           <Button variant="primary" onClick={handleSave}>
             Save
           </Button>

@@ -46,8 +46,8 @@
 }
 
 .chevronIcon {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   display: block;
   object-fit: contain;
 }
@@ -254,8 +254,8 @@
 }
 
 .actionIcon {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   display: block;
 }
 

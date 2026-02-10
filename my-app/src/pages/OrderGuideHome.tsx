@@ -160,6 +160,19 @@ const POTENTIAL_SAVINGS_DUMMY: PotentialSavingsStat[] = [
   { label: "Sysco orders", value: "12.1%" },
 ];
 
+/** Average order size stat for Orders tab card */
+interface AvgOrderSizeStat {
+  supplierName: string;
+  value: string;
+  percentChange: number;
+  isIncrease: boolean;
+}
+const AVG_ORDER_SIZE_DUMMY: AvgOrderSizeStat[] = [
+  { supplierName: "Sysco", value: "$789.21", percentChange: 2.4, isIncrease: false },
+  { supplierName: "Farmer Brothers", value: "$245.43", percentChange: 4.5, isIncrease: true },
+  { supplierName: "Meat Market", value: "$431.89", percentChange: 6.8, isIncrease: false },
+];
+
 /** Price change row for Orders tab */
 interface PriceChangeRow {
   id: string;
@@ -556,7 +569,10 @@ export function OrderGuideHome() {
                     ingredientImageUrl={getIngredientImageUrl(item.ingredientName)}
                     products={item.products}
                     productIdLabel={(row) => `ID ${row.id}`}
-                    onEdit={() => {}}
+                    onEdit={() => {
+                      const g = allGroups.find((x) => x.ingredientName === item.ingredientName);
+                      if (g) setEditingGroupId(g.id);
+                    }}
                     onProductAction={() => {}}
                   />
                 ))}
@@ -576,7 +592,7 @@ export function OrderGuideHome() {
                       ingredientImageUrl={getIngredientImageUrl(item.ingredient.name)}
                       products={item.products}
                       productIdLabel={(row) => `ID ${row.id}`}
-                      onEdit={() => {}}
+                      onEdit={() => setEditingGroupId(String(item.ingredient.id))}
                       onProductAction={() => {}}
                     />
                   ))
@@ -638,30 +654,26 @@ export function OrderGuideHome() {
                 ))}
               </ul>
             </section>
-            <section className={styles.ordersCard}>
-              <div className={styles.ordersCardHeader}>
-                <h3 className={styles.ordersCardTitle}>Price changes</h3>
-                <button type="button" className={styles.ordersCardMore}>More</button>
+            <section className={`${styles.statsCard} ${styles.statsCardPotentialSavings}`}>
+              <div className={styles.statsCardHeader}>
+                <h3 className={styles.statsCardTitle}>Avg order size</h3>
+                <button type="button" className={styles.cardMoreButton} aria-label="More options">
+                  <img src={MORE_ICON_SRC} alt="" className={styles.cardMoreIcon} />
+                </button>
               </div>
-              <ul className={styles.priceChangesList}>
-                {PRICE_CHANGES_DUMMY.map((row) => (
-                  <li key={row.id} className={styles.priceChangeRow}>
-                    {row.imageUrl && (
-                      <img src={row.imageUrl} alt="" className={styles.priceChangeImg} />
-                    )}
-                    <div className={styles.priceChangeBody}>
-                      <span className={styles.priceChangeName}>{row.productName}</span>
-                      <span className={styles.priceChangePacker}>Packer | {row.packerId}</span>
-                    </div>
-                    <div className={styles.priceChangePriceBlock}>
-                      <span className={styles.priceChangePrice}>{row.priceDisplay}</span>
-                      <span className={row.isIncrease ? styles.priceChangeUp : styles.priceChangeDown}>
-                        {row.changePercent}% {row.isIncrease ? "increase" : "decrease"}
+              <div className={styles.potentialSavingsStatsWrap}>
+                <div className={styles.potentialSavingsStats}>
+                  {AVG_ORDER_SIZE_DUMMY.map((stat, i) => (
+                    <div key={i} className={styles.potentialSavingsStat}>
+                      <span className={styles.potentialSavingsLabel}>{stat.supplierName}</span>
+                      <span className={styles.potentialSavingsValue}>{stat.value}</span>
+                      <span className={styles.avgOrderSizePercent}>
+                        {stat.isIncrease ? "↑" : "↓"} {stat.percentChange}% last 30 days
                       </span>
                     </div>
-                  </li>
-                ))}
-              </ul>
+                  ))}
+                </div>
+              </div>
             </section>
           </div>
           <section className={styles.section}>

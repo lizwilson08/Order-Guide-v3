@@ -65,6 +65,9 @@ export function EditFavoritesModal({
             >
               <img src={CLOSE_ICON_SRC} alt="" className={styles.closeIcon} />
             </Button>
+            <Heading as="h1" className={styles.headline}>
+              Edit favorites
+            </Heading>
           </div>
           <div className={styles.headerActions}>
             <Button variant="secondary" onClick={onCreateGroup}>
@@ -75,10 +78,6 @@ export function EditFavoritesModal({
             </Button>
           </div>
         </header>
-
-        <Heading as="h1" className={styles.headline}>
-          Edit favorites
-        </Heading>
 
         <div className={styles.searchFilterRow}>
           <div className={styles.searchWrap}>
