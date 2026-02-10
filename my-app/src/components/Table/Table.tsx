@@ -14,6 +14,7 @@ export interface TableProps<T> {
   keyExtractor: (row: T) => string | number;
   onSort?: (key: string) => void;
   sortKey?: string | null;
+  onRowClick?: (row: T) => void;
 }
 
 export function Table<T>({
@@ -22,6 +23,7 @@ export function Table<T>({
   keyExtractor,
   onSort,
   sortKey = null,
+  onRowClick,
 }: TableProps<T>) {
   return (
     <div className={styles.wrapper}>
@@ -46,7 +48,12 @@ export function Table<T>({
         </thead>
         <tbody>
           {data.map((row) => (
-            <tr key={keyExtractor(row)}>
+            <tr
+              key={keyExtractor(row)}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
+              className={onRowClick ? styles.clickableRow : undefined}
+              role={onRowClick ? "button" : undefined}
+            >
               {columns.map((col) => (
                 <td key={col.key}>
                   {col.render

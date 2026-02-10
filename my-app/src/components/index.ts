@@ -35,3 +35,10 @@ export type {
 
 export { EditGroupModal } from "./EditGroupModal/EditGroupModal";
 export type { EditGroupModalProps } from "./EditGroupModal/EditGroupModal";
+
+export { OrderDetailModal } from "./OrderDetailModal/OrderDetailModal";
+export type {
+  OrderDetailModalProps,
+  OrderDetail,
+  OrderLineItem,
+} from "./OrderDetailModal/OrderDetailModal";

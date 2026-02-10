@@ -133,7 +133,7 @@
 .profitabilityCardsRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 16px;
   margin-bottom: var(--space-4);
 }
 
@@ -150,6 +150,14 @@
   min-height: 220px;
 }
 
+.profitabilityCardsRow .statsCard:not(.statsCardPotentialSavings) {
+  padding-bottom: 8px;
+}
+
+.profitabilityCardsRow .statsCard:not(.statsCardPotentialSavings) .statsCardHeader {
+  margin-bottom: 8px;
+}
+
 .potentialSavingsStatsWrap {
   margin-top: auto;
 }
@@ -158,7 +166,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-4);
+  margin-bottom: 8px;
 }
 
 .statsCardTitle {
@@ -248,7 +256,7 @@
   flex-wrap: wrap;
 }
 
-/* Search: collapsed = icon button (same pattern as filter buttons); expanded = full input */
+/* Search: collapsed = icon button; expands to full search bar when clicked */
 .searchTrigger {
   flex-shrink: 0;
   width: 40px;
@@ -256,7 +264,7 @@
   min-width: 40px;
   min-height: 40px;
   padding: 0;
-  border-radius: 12px;
+  border-radius: 9999px;
   border: 1px solid var(--color-border);
   background-color: var(--color-surface);
   cursor: pointer;
@@ -283,7 +291,7 @@
   min-width: 200px;
   display: flex;
   align-items: center;
-  border-radius: 12px;
+  border-radius: 9999px;
   border: 1px solid var(--color-border);
   background-color: var(--color-surface);
   padding: 0 var(--space-3);
@@ -471,7 +479,7 @@
 .ordersTopRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
@@ -480,6 +488,14 @@
   border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: var(--space-4);
+}
+
+.ordersTopRow .ordersCard:first-child {
+  padding-bottom: 8px;
+}
+
+.ordersTopRow .ordersCard:first-child .ordersCardTitle {
+  margin-bottom: 8px;
 }
 
 .ordersCardTitle {
@@ -519,23 +535,38 @@
   color: var(--color-secondary);
 }
 
-/* Active orders list – match Price changes spacing and styling */
+/* Active orders list – row styling matches Figma / Edit group modal */
 .activeOrdersList {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: 0;
+}
+
+.activeOrdersList li {
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.activeOrdersList li:last-child {
+  border-bottom: none;
 }
 
 .activeOrderLink {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0;
+  padding: var(--space-3) 0;
   text-decoration: none;
   color: inherit;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
 }
 
 .activeOrderLink:hover {
@@ -552,7 +583,7 @@
 .activeOrderVendor {
   font-family: var(--font-sans);
   font-size: var(--font-size-body-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-normal);
   color: var(--color-text-primary);
 }
 
@@ -568,20 +599,27 @@
   align-items: center;
 }
 
-/* Price changes list */
+/* Price changes list – row styling matches Figma / Edit group modal */
 .priceChangesList {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: 0;
 }
 
 .priceChangeRow {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.priceChangeRow:last-child {
+  border-bottom: none;
 }
 
 .priceChangeImg {
@@ -603,7 +641,7 @@
 .priceChangeName {
   font-family: var(--font-sans);
   font-size: var(--font-size-body-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-normal);
   color: var(--color-text-primary);
 }
 

@@ -4,7 +4,7 @@ import { Button, Heading, Checkbox } from "../index";
 import styles from "./EditFavoritesModal.module.css";
 
 const SEARCH_ICON_SRC = "/images/icons/search.png";
-const EDIT_ICON_SRC = "/images/icons/edit.png";
+const EDIT_ICON_SRC = "/images/icons/edit.png?v=2";
 const CLOSE_ICON_SRC = "/images/icons/X.png";
 
 export interface FavoriteGroupItem {

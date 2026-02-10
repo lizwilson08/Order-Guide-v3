@@ -10,6 +10,7 @@
   color: var(--color-text-primary);
 }
 
+/* Default state */
 .input {
   width: 100%;
   font-family: var(--font-sans);
@@ -27,21 +28,19 @@
   color: var(--color-text-muted);
 }
 
+/* Hover state */
 .input:hover:not(:disabled) {
   border-color: var(--color-neutral-400);
 }
 
+/* Focus state */
 .input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-muted);
 }
 
-.input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
+/* Error state */
 .inputError {
   border-color: var(--color-error);
 }
@@ -50,7 +49,101 @@
   box-shadow: 0 0 0 3px var(--color-error-muted);
 }
 
+/* Disabled state */
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--color-neutral-50);
+}
+.input:disabled::placeholder {
+  color: var(--color-text-muted);
+}
+
 .error {
   font-size: var(--font-size-sm);
   color: var(--color-error);
+}
+
+/* Label-inside variant: one bordered container with label on top, input below (Figma-style) */
+
+/* Default state */
+.wrapperInside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+/* Hover state */
+.wrapperInside:hover:not(:has(input:disabled)) {
+  border-color: var(--color-neutral-400);
+}
+
+/* Focus state */
+.wrapperInside:focus-within {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-muted);
+}
+
+/* Error state */
+.wrapperInside:has(.inputError) {
+  border-color: var(--color-error);
+}
+.wrapperInside:has(.inputError):focus-within {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px var(--color-error-muted);
+}
+
+/* Disabled state – no hover/focus styling, muted appearance */
+.wrapperInside:has(input:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--color-neutral-50);
+}
+.wrapperInside:has(input:disabled):hover {
+  border-color: var(--color-border);
+}
+.wrapperInside:has(input:disabled):focus-within {
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+
+.labelInside {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.inputInside {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  padding: 0;
+  min-height: 0;
+}
+
+.inputInside::placeholder {
+  color: var(--color-text-muted);
+}
+
+.inputInside:focus {
+  outline: none;
+}
+
+.inputInside:disabled {
+  cursor: not-allowed;
+}
+.inputInside:disabled::placeholder {
+  color: var(--color-text-muted);
 }

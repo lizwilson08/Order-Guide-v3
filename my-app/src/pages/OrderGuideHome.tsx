@@ -1,11 +1,11 @@
 import { useEffect, useState, useMemo, useRef } from "react";
-import { Link } from "react-router-dom";
 import { api } from "../api/client";
 import type { Ingredient } from "../types";
 import type { ProductRow } from "../components/ProductComparisonGroup";
 import { ProductComparisonGroup } from "../components/ProductComparisonGroup";
-import { Button, Select, Heading, Input, Loading, Badge, Table, EditFavoritesModal, EditGroupModal } from "../components";
+import { Button, Select, Heading, Input, Loading, Badge, Table, EditFavoritesModal, EditGroupModal, OrderDetailModal } from "../components";
 import type { FavoriteGroupItem } from "../components";
+import type { OrderDetail } from "../components";
 import type { Column } from "../components/Table/Table";
 import styles from "./OrderGuideHome.module.css";
 
@@ -212,6 +212,97 @@ const PAST_ORDERS_COLUMNS: Column<PastOrderRow>[] = [
   { key: "total", header: "Total" },
 ];
 
+/** Dummy order details for full-page order modal (active + past orders) */
+const ORDER_DETAILS_DUMMY: Record<string, OrderDetail> = {
+  "1": {
+    orderId: "1",
+    vendorName: "JD Foods",
+    vendorContact: "555-0101",
+    vendorEmail: "orders@jdfoods.com",
+    status: "Pending",
+    total: 287.17,
+    lineItems: [
+      { productName: "Organic Tomatoes", quantity: 12, unit: "cs", unitPrice: 18.5, lineTotal: 222 },
+      { productName: "Romaine Lettuce", quantity: 6, unit: "cs", unitPrice: 10.89, lineTotal: 65.34 },
+    ],
+  },
+  "2": {
+    orderId: "2",
+    vendorName: "Farmer Brothers",
+    vendorContact: "555-0102",
+    status: "Draft",
+    total: 287.17,
+    lineItems: [
+      { productName: "Whole Bean Coffee", quantity: 4, unit: "lb", unitPrice: 8.99, lineTotal: 35.96 },
+      { productName: "Half & Half", quantity: 8, unit: "gal", unitPrice: 28.5, lineTotal: 228 },
+    ],
+  },
+  "3": {
+    orderId: "3",
+    vendorName: "Sysco",
+    vendorEmail: "account@sysco.com",
+    status: "Draft",
+    total: 287.17,
+    lineItems: [
+      { productName: "Chicken Breast", quantity: 20, unit: "lb", unitPrice: 3.99, lineTotal: 79.8 },
+      { productName: "Vegetable Oil", quantity: 6, unit: "gal", unitPrice: 24.5, lineTotal: 147 },
+    ],
+  },
+  "125": {
+    orderId: 125,
+    vendorName: "Sysco",
+    vendorContact: "555-0201",
+    status: "Completed",
+    total: 1289,
+    lineItems: [
+      { productName: "Ground Beef 80/20", quantity: 50, unit: "lb", unitPrice: 4.5, lineTotal: 225 },
+      { productName: "Pasta Spaghetti", quantity: 24, unit: "cs", unitPrice: 32, lineTotal: 768 },
+      { productName: "Olive Oil", quantity: 12, unit: "bts", unitPrice: 24.5, lineTotal: 294 },
+    ],
+  },
+  "124": {
+    orderId: 124,
+    vendorName: "US Foods",
+    status: "Completed",
+    total: 938,
+    lineItems: [
+      { productName: "Salmon Fillet", quantity: 30, unit: "lb", unitPrice: 12.5, lineTotal: 375 },
+      { productName: "Mixed Greens", quantity: 15, unit: "cs", unitPrice: 28, lineTotal: 420 },
+      { productName: "Balsamic Vinegar", quantity: 6, unit: "bts", unitPrice: 23.83, lineTotal: 142.98 },
+    ],
+  },
+  "123": {
+    orderId: 123,
+    vendorName: "Meat Market",
+    status: "Cancelled",
+    total: 445,
+    lineItems: [
+      { productName: "Ribeye Steak", quantity: 20, unit: "lb", unitPrice: 14.99, lineTotal: 299.8 },
+      { productName: "Pork Chops", quantity: 15, unit: "lb", unitPrice: 9.67, lineTotal: 145.05 },
+    ],
+  },
+  "122": {
+    orderId: 122,
+    vendorName: "Farmer Brothers",
+    status: "Completed",
+    total: 612.5,
+    lineItems: [
+      { productName: "Coffee Beans", quantity: 25, unit: "lb", unitPrice: 8.5, lineTotal: 212.5 },
+      { productName: "Tea Bags", quantity: 10, unit: "cs", unitPrice: 40, lineTotal: 400 },
+    ],
+  },
+  "121": {
+    orderId: 121,
+    vendorName: "Fishmonger",
+    status: "Completed",
+    total: 320,
+    lineItems: [
+      { productName: "Fresh Cod", quantity: 16, unit: "lb", unitPrice: 12, lineTotal: 192 },
+      { productName: "Shrimp 16/20", quantity: 8, unit: "lb", unitPrice: 16, lineTotal: 128 },
+    ],
+  },
+};
+
 export function OrderGuideHome() {
   const [ingredientsWithProducts, setIngredientsWithProducts] = useState<IngredientWithProducts[]>([]);
   const [loading, setLoading] = useState(true);
@@ -228,7 +319,9 @@ export function OrderGuideHome() {
   const [editFavoritesOpen, setEditFavoritesOpen] = useState(false);
   const [modalSelectedIds, setModalSelectedIds] = useState<Set<string>>(new Set());
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
+  const [editGroupSource, setEditGroupSource] = useState<"main" | "favorites" | null>(null);
   const [editedGroups, setEditedGroups] = useState<Record<string, { ingredientName: string; products: ProductRow[] }>>({});
+  const [selectedOrderId, setSelectedOrderId] = useState<string | number | null>(null);
 
   useEffect(() => {
     api.ingredients
@@ -272,6 +365,15 @@ export function OrderGuideHome() {
     );
     return [...withChickenDummy, ...ALL_PRODUCTS_EXTRA];
   }, [filteredForSearch]);
+
+  /** All products excluding any group that is in favorites (favorites only appear in Favorites section) */
+  const allProductsExcludingFavorites = useMemo(
+    () =>
+      allProducts.filter(
+        (item) => !favorites.some((f) => f.ingredientName === item.ingredient.name)
+      ),
+    [allProducts, favorites]
+  );
 
   type GroupWithProducts = FavoriteGroupItem & { products: ProductRow[] };
   const allGroups = useMemo((): GroupWithProducts[] => {
@@ -322,6 +424,8 @@ export function OrderGuideHome() {
   }
 
   const editingGroup = editingGroupId ? allGroups.find((g) => g.id === editingGroupId) ?? null : null;
+
+  const orderDetail = selectedOrderId != null ? ORDER_DETAILS_DUMMY[String(selectedOrderId)] ?? null : null;
 
   function handleSaveEditGroup(payload: {
     id: string;
@@ -571,7 +675,10 @@ export function OrderGuideHome() {
                     productIdLabel={(row) => `ID ${row.id}`}
                     onEdit={() => {
                       const g = allGroups.find((x) => x.ingredientName === item.ingredientName);
-                      if (g) setEditingGroupId(g.id);
+                      if (g) {
+                        setEditingGroupId(g.id);
+                        setEditGroupSource("main");
+                      }
                     }}
                     onProductAction={() => {}}
                   />
@@ -582,17 +689,20 @@ export function OrderGuideHome() {
             <section className={styles.section}>
               <h2 className={styles.sectionTitle}>All products</h2>
               <div className={styles.sectionList}>
-                {allProducts.length === 0 ? (
+                {allProductsExcludingFavorites.length === 0 ? (
                   <p className={styles.placeholder}>No ingredient groups yet. Add ingredients and products via the API.</p>
                 ) : (
-                  allProducts.map((item) => (
+                  allProductsExcludingFavorites.map((item) => (
                     <ProductComparisonGroup
                       key={item.ingredient.id}
                       ingredientName={item.ingredient.name}
                       ingredientImageUrl={getIngredientImageUrl(item.ingredient.name)}
                       products={item.products}
                       productIdLabel={(row) => `ID ${row.id}`}
-                      onEdit={() => setEditingGroupId(String(item.ingredient.id))}
+                      onEdit={() => {
+                        setEditingGroupId(String(item.ingredient.id));
+                        setEditGroupSource("main");
+                      }}
                       onProductAction={() => {}}
                     />
                   ))
@@ -617,16 +727,33 @@ export function OrderGuideHome() {
           });
         }}
         onSave={handleSaveFavorites}
-        onEditGroup={(id) => setEditingGroupId(id)}
+        onEditGroup={(id) => {
+          setEditingGroupId(id);
+          setEditGroupSource("favorites");
+          setEditFavoritesOpen(false);
+        }}
         onCreateGroup={() => {}}
       />
 
       <EditGroupModal
         open={!!editingGroupId}
-        onClose={() => setEditingGroupId(null)}
+        onClose={() => {
+          const wasFromFavorites = editGroupSource === "favorites";
+          setEditingGroupId(null);
+          setEditGroupSource(null);
+          if (wasFromFavorites) setEditFavoritesOpen(true);
+        }}
         group={editingGroup}
         isFavorite={editingGroup ? modalSelectedIds.has(editingGroup.id) : false}
         onSave={handleSaveEditGroup}
+        useCloseButton={editGroupSource === "main"}
+        compactHeader={editGroupSource === "favorites"}
+      />
+
+      <OrderDetailModal
+        open={!!selectedOrderId}
+        onClose={() => setSelectedOrderId(null)}
+        order={orderDetail}
       />
 
       {activeTab === "orders" && (
@@ -637,7 +764,11 @@ export function OrderGuideHome() {
               <ul className={styles.activeOrdersList}>
                 {ACTIVE_ORDERS_DUMMY.map((row) => (
                   <li key={row.id}>
-                    <Link to="/purchase-orders/1" className={styles.activeOrderLink}>
+                    <button
+                      type="button"
+                      className={styles.activeOrderLink}
+                      onClick={() => setSelectedOrderId(row.id)}
+                    >
                       <div className={styles.activeOrderMain}>
                         <span className={styles.activeOrderVendor}>{row.vendorName}</span>
                         <span className={styles.activeOrderMeta}>
@@ -649,7 +780,7 @@ export function OrderGuideHome() {
                           {row.status === "pending" ? "Pending" : "Draft"}
                         </Badge>
                       </div>
-                    </Link>
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -684,6 +815,7 @@ export function OrderGuideHome() {
                 columns={PAST_ORDERS_COLUMNS}
                 data={PAST_ORDERS_DUMMY}
                 keyExtractor={(row) => row.id}
+                onRowClick={(row) => setSelectedOrderId(row.orderId)}
               />
               </div>
             </div>

@@ -5,8 +5,8 @@ export interface ModalProps {
   open: boolean;
   onClose: () => void;
   children: ReactNode;
-  /** "partialTop" = center-top, 664px width, 32px from top */
-  variant?: "partialTop" | "center";
+  /** "partialTop" = center-top, 664px width; "fullPage" = fills viewport */
+  variant?: "partialTop" | "center" | "fullPage";
   /** Optional aria label for the dialog */
   "aria-label"?: string;
 }
@@ -27,7 +27,7 @@ export function Modal({
       role="presentation"
     >
       <div
-        className={`${styles.panel} ${variant === "partialTop" ? styles.partialTop : ""}`}
+        className={`${styles.panel} ${variant === "partialTop" ? styles.partialTop : ""} ${variant === "fullPage" ? styles.fullPage : ""}`}
         role="dialog"
         aria-modal="true"
         aria-label={ariaLabel}

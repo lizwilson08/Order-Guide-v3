@@ -42,3 +42,7 @@
 .sortable:hover {
   color: var(--color-text-primary);
 }
+
+.clickableRow {
+  cursor: pointer;
+}

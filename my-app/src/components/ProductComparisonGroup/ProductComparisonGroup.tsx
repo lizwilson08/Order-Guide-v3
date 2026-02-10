@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { Checkbox } from "../Checkbox/Checkbox";
 import styles from "./ProductComparisonGroup.module.css";
 
 export interface ProductRow {
@@ -28,7 +29,7 @@ export interface ProductComparisonGroupProps {
 
 const CHEVRON_UP_ICON_SRC = "/images/icons/chevron-up.png";
 const CHEVRON_DOWN_ICON_SRC = "/images/icons/chevron-down.png";
-const EDIT_ICON_SRC = "/images/icons/edit.png";
+const EDIT_ICON_SRC = "/images/icons/edit.png?v=2";
 const MORE_ICON_SRC = "/images/icons/more.png";
 
 export function ProductComparisonGroup({
@@ -109,7 +110,7 @@ export function ProductComparisonGroup({
                   <th className={styles.colActions}>
                     {onEdit && (
                       <button type="button" className={styles.editButton} onClick={onEdit} aria-label="Edit list">
-                        <img src={EDIT_ICON_SRC} alt="" className={styles.actionIcon} />
+                        <img src={EDIT_ICON_SRC} alt="" className={styles.editIcon} />
                       </button>
                     )}
                   </th>
@@ -120,8 +121,7 @@ export function ProductComparisonGroup({
                   <tr key={row.id}>
                     {showCheckboxes && (
                       <td className={styles.colCheckbox}>
-                        <input
-                          type="checkbox"
+                        <Checkbox
                           checked={selectedProductIds!.has(row.id)}
                           onChange={() => onToggleProduct!(row.id)}
                           aria-label={`Select ${row.name}`}

@@ -164,7 +164,12 @@
 }
 
 .table tbody tr td.colProduct:not(:first-child) {
-  padding-left: 12px; /* product column starts after 40px checkbox; 12px lines up with header image */
+  padding-left: 12px; /* product column when no checkbox in row */
+}
+
+/* 16px between checkbox and next element (product column) when row has selection */
+.table tbody tr td.colCheckbox + td.colProduct {
+  padding-left: 16px;
 }
 
 .table td.colActions {
@@ -257,6 +262,13 @@
   width: 32px;
   height: 32px;
   display: block;
+}
+
+.editIcon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  object-fit: contain;
 }
 
 .actionButton,

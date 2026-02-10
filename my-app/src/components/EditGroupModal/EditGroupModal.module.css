@@ -1,5 +1,5 @@
 .modalContent {
-  padding: 16px;
+  padding: 32px;
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
@@ -7,68 +7,98 @@
 
 .header {
   display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Default modal header: matches Edit Favorites – close + headline stacked left, actions right */
+.headerRegular {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.headline {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Compact header: one line, Back | title (h2) center | Save – when drilled in from Edit Favorites */
+.headerCompact {
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
 }
 
-.title {
+.titleCompact {
   flex: 1;
-  text-align: center;
-}
-
-.backButton {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  min-width: 40px;
-}
-
-.backIcon {
-  width: 20px;
-  height: 20px;
-  display: block;
-  object-fit: contain;
-}
-
-.header .title {
   font-family: var(--font-sans);
   font-size: var(--font-size-h2);
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.02em;
   color: var(--color-text-primary);
   margin: 0;
+  text-align: center;
 }
+
+.headerButtonRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.title {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0;
+  text-align: center;
+}
+
+.backButton,
+.closeButton {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  min-width: 40px;
+}
+
+.backIcon,
+.closeIcon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  object-fit: contain;
+}
+
 
 .fieldGroup {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-}
-
-.fieldLabel {
-  font-family: var(--font-sans);
-  font-size: var(--font-size-body-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-}
-
-.nameInput {
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
-  padding: var(--space-2) var(--space-3);
-  min-height: 40px;
-  font-family: var(--font-sans);
-  font-size: var(--font-size-body);
-  color: var(--color-text-primary);
-}
-
-.nameInput:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-muted);
 }
 
 .addToFavoritesWrap {
@@ -102,33 +132,28 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  overflow: hidden;
 }
 
 .productRow {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-3) 0;
   background-color: var(--color-surface);
-}
-
-.productRow:last-child {
-  border-bottom: none;
 }
 
 .productMain {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
 .productName {
   font-family: var(--font-sans);
   font-size: var(--font-size-body-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-normal);
   color: var(--color-text-primary);
   display: block;
   overflow: hidden;
@@ -139,24 +164,30 @@
 .productId {
   font-family: var(--font-sans);
   font-size: var(--font-size-body-xs);
+  font-weight: var(--font-weight-normal);
   color: var(--color-text-muted);
-  margin-top: 2px;
 }
 
 .productVendor {
   text-align: right;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
 }
 
 .productVendorLine {
   font-family: var(--font-sans);
-  font-size: var(--font-size-body-xs);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-normal);
   color: var(--color-text-primary);
   display: block;
 }
 
 .productVendorLine + .productVendorLine {
-  margin-top: 2px;
+  font-size: var(--font-size-body-xs);
+  color: var(--color-text-muted);
 }
 
 .deleteButton {
@@ -177,8 +208,9 @@
   color: var(--color-text-primary);
 }
 
-.deleteButton svg {
+.deleteIcon {
   width: 20px;
   height: 20px;
   display: block;
+  object-fit: contain;
 }
