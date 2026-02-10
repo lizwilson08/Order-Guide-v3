@@ -56,6 +56,8 @@
   --font-size-body-sm: 14px;
   --font-size-body-xs: 12px;
   --font-size-label: 14px;
+  /* Display – large numbers and hero stats */
+  --font-size-display: 32px;
   /* Legacy scale (for components that reference these) */
   --font-size-xs: 12px;
   --font-size-sm: 14px;

@@ -3,14 +3,5 @@
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/design-system", "destination": "/index.html" },
-    { "source": "/ingredients/:id", "destination": "/index.html" },
-    { "source": "/shopping-lists", "destination": "/index.html" },
-    { "source": "/shopping-lists/:id", "destination": "/index.html" },
-    { "source": "/purchase-orders", "destination": "/index.html" },
-    { "source": "/purchase-orders/:id", "destination": "/index.html" },
-    { "source": "/vendors", "destination": "/index.html" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

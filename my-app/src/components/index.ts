@@ -32,3 +32,6 @@ export type {
   EditFavoritesModalProps,
   FavoriteGroupItem,
 } from "./EditFavoritesModal/EditFavoritesModal";
+
+export { EditGroupModal } from "./EditGroupModal/EditGroupModal";
+export type { EditGroupModalProps } from "./EditGroupModal/EditGroupModal";

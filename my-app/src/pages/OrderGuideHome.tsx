@@ -4,13 +4,14 @@ import { api } from "../api/client";
 import type { Ingredient } from "../types";
 import type { ProductRow } from "../components/ProductComparisonGroup";
 import { ProductComparisonGroup } from "../components/ProductComparisonGroup";
-import { Button, Select, Heading, Input, Loading, Badge, Table, EditFavoritesModal } from "../components";
+import { Button, Select, Heading, Input, Loading, Badge, Table, EditFavoritesModal, EditGroupModal } from "../components";
 import type { FavoriteGroupItem } from "../components";
 import type { Column } from "../components/Table/Table";
 import styles from "./OrderGuideHome.module.css";
 
 const PRINT_ICON_SRC = "/images/icons/print.png";
 const SEARCH_ICON_SRC = "/images/icons/search.png";
+const MORE_ICON_SRC = "/images/icons/more.png";
 const INGREDIENTS_IMAGE_BASE = "/images/ingredients";
 
 /** Map ingredient names to image filenames in the ingredients folder */
@@ -148,6 +149,17 @@ const ACTIVE_ORDERS_DUMMY: ActiveOrderRow[] = [
   { id: "3", vendorName: "Sysco", productCount: 80, total: 287.17, status: "draft" },
 ];
 
+/** Potential savings stat for profitability cards */
+interface PotentialSavingsStat {
+  label: string;
+  value: string;
+}
+const POTENTIAL_SAVINGS_DUMMY: PotentialSavingsStat[] = [
+  { label: "Favorite products", value: "4.8%" },
+  { label: "Produce category", value: "7.6%" },
+  { label: "Sysco orders", value: "12.1%" },
+];
+
 /** Price change row for Orders tab */
 interface PriceChangeRow {
   id: string;
@@ -202,6 +214,8 @@ export function OrderGuideHome() {
   const [favorites, setFavorites] = useState<{ ingredientName: string; products: ProductRow[] }[]>(() => FAVORITES_DUMMY);
   const [editFavoritesOpen, setEditFavoritesOpen] = useState(false);
   const [modalSelectedIds, setModalSelectedIds] = useState<Set<string>>(new Set());
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
+  const [editedGroups, setEditedGroups] = useState<Record<string, { ingredientName: string; products: ProductRow[] }>>({});
 
   useEffect(() => {
     api.ingredients
@@ -248,13 +262,17 @@ export function OrderGuideHome() {
 
   type GroupWithProducts = FavoriteGroupItem & { products: ProductRow[] };
   const allGroups = useMemo((): GroupWithProducts[] => {
-    const fromAllProducts: GroupWithProducts[] = allProducts.map((item) => ({
-      id: String(item.ingredient.id),
-      ingredientName: item.ingredient.name,
-      ingredientImageUrl: getIngredientImageUrl(item.ingredient.name),
-      productCount: item.products.length,
-      products: item.products,
-    }));
+    const fromAllProducts: GroupWithProducts[] = allProducts.map((item) => {
+      const id = String(item.ingredient.id);
+      const edited = editedGroups[id];
+      return {
+        id,
+        ingredientName: edited?.ingredientName ?? item.ingredient.name,
+        ingredientImageUrl: getIngredientImageUrl(edited?.ingredientName ?? item.ingredient.name),
+        productCount: (edited?.products ?? item.products).length,
+        products: edited?.products ?? item.products,
+      };
+    });
     const fromFavorites = favorites.filter(
       (f) => !allProducts.some((a) => a.ingredient.name === f.ingredientName)
     );
@@ -266,7 +284,7 @@ export function OrderGuideHome() {
       products: f.products,
     }));
     return [...fromAllProducts, ...fromFavoritesMapped];
-  }, [allProducts, favorites]);
+  }, [allProducts, favorites, editedGroups]);
 
   const favoriteIds = useMemo(
     () =>
@@ -288,6 +306,39 @@ export function OrderGuideHome() {
     const selected = allGroups.filter((g) => modalSelectedIds.has(g.id));
     setFavorites(selected.map((g) => ({ ingredientName: g.ingredientName, products: g.products })));
     setEditFavoritesOpen(false);
+  }
+
+  const editingGroup = editingGroupId ? allGroups.find((g) => g.id === editingGroupId) ?? null : null;
+
+  function handleSaveEditGroup(payload: {
+    id: string;
+    ingredientName: string;
+    products: ProductRow[];
+    addToFavorites: boolean;
+  }) {
+    const { id, ingredientName, products, addToFavorites } = payload;
+    const isFromApi = /^\d+$/.test(id);
+    if (isFromApi) {
+      setEditedGroups((prev) => ({ ...prev, [id]: { ingredientName, products } }));
+    }
+    setFavorites((prev) => {
+      const withoutThis = prev.filter((f) => {
+        const g = allGroups.find((x) => x.ingredientName === f.ingredientName);
+        return !g || g.id !== id;
+      });
+      if (addToFavorites) return [...withoutThis, { ingredientName, products }];
+      return withoutThis;
+    });
+    if (addToFavorites) {
+      setModalSelectedIds((prev) => new Set([...prev, id]));
+    } else {
+      setModalSelectedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+    setEditingGroupId(null);
   }
 
   if (loading) {
@@ -360,6 +411,53 @@ export function OrderGuideHome() {
 
       {activeTab === "profitability" && (
         <>
+          <div className={styles.profitabilityCardsRow}>
+            <section className={`${styles.statsCard} ${styles.statsCardPotentialSavings}`}>
+              <div className={styles.statsCardHeader}>
+                <h3 className={styles.statsCardTitle}>Potential savings</h3>
+                <button type="button" className={styles.cardMoreButton} aria-label="More options">
+                  <img src={MORE_ICON_SRC} alt="" className={styles.cardMoreIcon} />
+                </button>
+              </div>
+              <div className={styles.potentialSavingsStatsWrap}>
+                <div className={styles.potentialSavingsStats}>
+                  {POTENTIAL_SAVINGS_DUMMY.map((stat, i) => (
+                    <div key={i} className={styles.potentialSavingsStat}>
+                      <span className={styles.potentialSavingsLabel}>{stat.label}</span>
+                      <span className={styles.potentialSavingsValue}>{stat.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+            <section className={styles.statsCard}>
+              <div className={styles.statsCardHeader}>
+                <h3 className={styles.statsCardTitle}>Price changes</h3>
+                <button type="button" className={styles.cardMoreButton} aria-label="More options">
+                  <img src={MORE_ICON_SRC} alt="" className={styles.cardMoreIcon} />
+                </button>
+              </div>
+              <ul className={styles.priceChangesList}>
+                {PRICE_CHANGES_DUMMY.map((row) => (
+                  <li key={row.id} className={styles.priceChangeRow}>
+                    {row.imageUrl && (
+                      <img src={row.imageUrl} alt="" className={styles.priceChangeImg} />
+                    )}
+                    <div className={styles.priceChangeBody}>
+                      <span className={styles.priceChangeName}>{row.productName}</span>
+                      <span className={styles.priceChangePacker}>Packer | {row.packerId}</span>
+                    </div>
+                    <div className={styles.priceChangePriceBlock}>
+                      <span className={styles.priceChangePrice}>{row.priceDisplay}</span>
+                      <span className={row.isIncrease ? styles.priceChangeUp : styles.priceChangeDown}>
+                        {row.changePercent}% {row.isIncrease ? "increase" : "decrease"}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
           <div className={styles.toolbar}>
             {searchExpanded ? (
               <div className={styles.searchWrap}>
@@ -503,8 +601,16 @@ export function OrderGuideHome() {
           });
         }}
         onSave={handleSaveFavorites}
-        onEditGroup={() => {}}
+        onEditGroup={(id) => setEditingGroupId(id)}
         onCreateGroup={() => {}}
+      />
+
+      <EditGroupModal
+        open={!!editingGroupId}
+        onClose={() => setEditingGroupId(null)}
+        group={editingGroup}
+        isFavorite={editingGroup ? modalSelectedIds.has(editingGroup.id) : false}
+        onSave={handleSaveEditGroup}
       />
 
       {activeTab === "orders" && (

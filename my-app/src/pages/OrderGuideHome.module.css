@@ -129,6 +129,108 @@
   background-color: var(--color-text-primary);
 }
 
+/* Profitability: two cards above toolbar */
+.profitabilityCardsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: var(--space-4);
+}
+
+.statsCard {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+}
+
+.statsCardPotentialSavings {
+  min-height: 220px;
+}
+
+.potentialSavingsStatsWrap {
+  margin-top: auto;
+}
+
+.statsCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.statsCardTitle {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.cardMoreButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.cardMoreButton:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-neutral-100);
+}
+
+.cardMoreIcon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
+}
+
+.potentialSavingsStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.potentialSavingsStat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--color-border);
+}
+
+.potentialSavingsStat:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.potentialSavingsLabel {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+}
+
+.potentialSavingsValue {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+}
+
 /* Toolbar: search + filter pills */
 .toolbar {
   display: flex;
