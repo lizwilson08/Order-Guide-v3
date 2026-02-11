@@ -21,7 +21,7 @@ export const VENDORS_CREATE_ORDER: CreateOrderVendor[] = [
   { id: "costco", name: "Costco", logoPath: `/images/logos/costco.png?v=${LOGO_VERSION}`, minimumOrder: 250 },
 ];
 
-/** Minimal product row for "recently ordered" and catalog. Optional fields for row display (Figma: image, packer, price change). */
+/** Minimal product row for "recently ordered" and catalog. Optional fields for row display. */
 export interface CatalogProduct {
   productName: string;
   quantity: number;
@@ -33,22 +33,26 @@ export interface CatalogProduct {
   changePercent?: number;
   isIncrease?: boolean;
   imageUrl?: string | null;
+  /** Display only, e.g. "Jan 15, 2025" */
+  lastOrderedDate?: string;
+  /** Display only, e.g. "Avg 1 per week", "2 per month" */
+  orderFrequency?: string;
 }
 
 /** "Regulars" / recently ordered products per vendor (for step 2). Same row format as Top price changes. */
 export const RECENT_PRODUCTS_BY_VENDOR: Record<string, CatalogProduct[]> = {
   sysco: [
-    { productName: "Lettuce Spring Mix Sweet Pillow", quantity: 1, unit: "cs", unitPrice: 22.47, lineTotal: 22.47, packerId: "2321452", priceDisplay: "$22.47/cs", changePercent: 2.4, isIncrease: false, imageUrl: "/images/ingredients/Lettuce.png" },
-    { productName: "Atlantic Salmon, Fillet, Frozen", quantity: 1, unit: "lb", unitPrice: 12.5, lineTotal: 12.5, packerId: "8845210", priceDisplay: "$12.50/lb", changePercent: 2.4, isIncrease: false, imageUrl: "/images/ingredients/Salmon.png" },
-    { productName: "Shell Eggs, Large, Grade A, 15-dozen case", quantity: 1, unit: "cs", unitPrice: 42, lineTotal: 42, packerId: "4451234", priceDisplay: "$42.00/cs", changePercent: 4.6, isIncrease: true, imageUrl: "/images/ingredients/Eggs-brown.png" },
-    { productName: "Organic Milk, Whole, 1-gallon jug", quantity: 1, unit: "gal", unitPrice: 3.49, lineTotal: 3.49, packerId: "7788123", priceDisplay: "$3.49/gal", changePercent: 2.1, isIncrease: true, imageUrl: "/images/ingredients/Milk.png" },
-    { productName: "Whole Wheat Bread, 20 oz loaves", quantity: 1, unit: "loaf", unitPrice: 2.99, lineTotal: 2.99, packerId: "3344556", priceDisplay: "$2.99/loaf", changePercent: 1.5, isIncrease: false, imageUrl: null },
-    { productName: "Fresh Strawberries, 1 lb containers", quantity: 1, unit: "lb", unitPrice: 4.99, lineTotal: 4.99, packerId: "6677890", priceDisplay: "$4.99/lb", changePercent: 5, isIncrease: true, imageUrl: "/images/ingredients/Strawberries.png" },
+    { productName: "Lettuce Spring Mix Sweet Pillow", quantity: 1, unit: "cs", unitPrice: 22.47, lineTotal: 22.47, packerId: "2321452", priceDisplay: "$22.47/cs", changePercent: 2.4, isIncrease: false, imageUrl: "/images/ingredients/Lettuce.png", lastOrderedDate: "Jan 15, 2025", orderFrequency: "Avg 2 per week" },
+    { productName: "Atlantic Salmon, Fillet, Frozen", quantity: 1, unit: "lb", unitPrice: 12.5, lineTotal: 12.5, packerId: "8845210", priceDisplay: "$12.50/lb", changePercent: 2.4, isIncrease: false, imageUrl: "/images/ingredients/Salmon.png", lastOrderedDate: "Jan 12, 2025", orderFrequency: "Avg 1 per week" },
+    { productName: "Shell Eggs, Large, Grade A, 15-dozen case", quantity: 1, unit: "cs", unitPrice: 42, lineTotal: 42, packerId: "4451234", priceDisplay: "$42.00/cs", changePercent: 4.6, isIncrease: true, imageUrl: "/images/ingredients/Eggs-brown.png", lastOrderedDate: "Jan 18, 2025", orderFrequency: "Avg 1 per week" },
+    { productName: "Organic Milk, Whole, 1-gallon jug", quantity: 1, unit: "gal", unitPrice: 3.49, lineTotal: 3.49, packerId: "7788123", priceDisplay: "$3.49/gal", changePercent: 2.1, isIncrease: true, imageUrl: "/images/ingredients/Milk.png", lastOrderedDate: "Jan 10, 2025", orderFrequency: "Avg 3 per week" },
+    { productName: "Whole Wheat Bread, 20 oz loaves", quantity: 1, unit: "loaf", unitPrice: 2.99, lineTotal: 2.99, packerId: "3344556", priceDisplay: "$2.99/loaf", changePercent: 1.5, isIncrease: false, imageUrl: "/images/ingredients/wheat-bread.png", lastOrderedDate: "Jan 8, 2025", orderFrequency: "2 per month" },
+    { productName: "Fresh Strawberries, 1 lb containers", quantity: 1, unit: "lb", unitPrice: 4.99, lineTotal: 4.99, packerId: "6677890", priceDisplay: "$4.99/lb", changePercent: 5, isIncrease: true, imageUrl: "/images/ingredients/Strawberries.png", lastOrderedDate: "Jan 14, 2025", orderFrequency: "Avg 1 per week" },
   ],
   "farmer-bros": [
-    { productName: "Whole Bean Coffee", quantity: 4, unit: "lb", unitPrice: 8.99, lineTotal: 35.96, packerId: "551234", priceDisplay: "$8.99/lb", changePercent: 1.2, isIncrease: true },
-    { productName: "Half & Half", quantity: 8, unit: "gal", unitPrice: 28.5, lineTotal: 228, priceDisplay: "$28.50/gal", changePercent: 0, isIncrease: false },
-    { productName: "Tea Bags English Breakfast", quantity: 5, unit: "cs", unitPrice: 18, lineTotal: 90, priceDisplay: "$18.00/cs", changePercent: 0.5, isIncrease: false },
+    { productName: "Whole Bean Coffee", quantity: 4, unit: "lb", unitPrice: 8.99, lineTotal: 35.96, packerId: "551234", priceDisplay: "$8.99/lb", changePercent: 1.2, isIncrease: true, orderFrequency: "Avg 1 per week" },
+    { productName: "Half & Half", quantity: 8, unit: "gal", unitPrice: 28.5, lineTotal: 228, priceDisplay: "$28.50/gal", changePercent: 0, isIncrease: false, orderFrequency: "2 per week" },
+    { productName: "Tea Bags English Breakfast", quantity: 5, unit: "cs", unitPrice: 18, lineTotal: 90, priceDisplay: "$18.00/cs", changePercent: 0.5, isIncrease: false, orderFrequency: "3 per month" },
   ],
   "meat-market": [
     { productName: "Ribeye Steak", quantity: 20, unit: "lb", unitPrice: 14.99, lineTotal: 299.8, packerId: "991234", priceDisplay: "$14.99/lb", changePercent: 3, isIncrease: true },
@@ -88,14 +92,18 @@ export interface PriceChangeProduct {
   unitPrice: number;
   vendorId: string;
   imageUrl?: string | null;
+  /** Display only, e.g. "Jan 15, 2025" */
+  lastOrderedDate?: string;
+  /** Display only, e.g. "Avg 1 per week", "2 per month" */
+  orderFrequency?: string;
 }
 
 export const PRICE_CHANGES_BY_VENDOR: Record<string, PriceChangeProduct[]> = {
   sysco: [
-    { id: "s1", productName: "Lettuce Spring Mix Sweet Pillow", packerId: "2321452", priceDisplay: "$22.47/cs", changePercent: 2.4, isIncrease: false, unit: "cs", unitPrice: 22.47, vendorId: "sysco", imageUrl: "/images/ingredients/Lettuce.png" },
-    { id: "s2", productName: "Atlantic Salmon, Fillet, Frozen", packerId: "8845210", priceDisplay: "$12.50/lb", changePercent: 2.4, isIncrease: false, unit: "lb", unitPrice: 12.5, vendorId: "sysco", imageUrl: "/images/ingredients/Salmon.png" },
-    { id: "s3", productName: "Shell Eggs, Large, Grade A, 15-dozen case", packerId: "4451234", priceDisplay: "$42.00/cs", changePercent: 4.6, isIncrease: true, unit: "cs", unitPrice: 42, vendorId: "sysco", imageUrl: "/images/ingredients/Eggs-brown.png" },
-    { id: "s4", productName: "Spinach, Fresh, 16 oz bags", packerId: "5566778", priceDisplay: "$1.99/bag", changePercent: 4.4, isIncrease: true, unit: "bag", unitPrice: 1.99, vendorId: "sysco", imageUrl: "/images/ingredients/Kale.png" },
+    { id: "s1", productName: "Lettuce Spring Mix Sweet Pillow", packerId: "2321452", priceDisplay: "$22.47/cs", changePercent: 2.4, isIncrease: false, unit: "cs", unitPrice: 22.47, vendorId: "sysco", imageUrl: "/images/ingredients/Lettuce.png", lastOrderedDate: "Jan 15, 2025", orderFrequency: "Avg 2 per week" },
+    { id: "s2", productName: "Atlantic Salmon, Fillet, Frozen", packerId: "8845210", priceDisplay: "$12.50/lb", changePercent: 2.4, isIncrease: false, unit: "lb", unitPrice: 12.5, vendorId: "sysco", imageUrl: "/images/ingredients/Salmon.png", lastOrderedDate: "Jan 12, 2025", orderFrequency: "Avg 1 per week" },
+    { id: "s3", productName: "Shell Eggs, Large, Grade A, 15-dozen case", packerId: "4451234", priceDisplay: "$42.00/cs", changePercent: 4.6, isIncrease: true, unit: "cs", unitPrice: 42, vendorId: "sysco", imageUrl: "/images/ingredients/Eggs-brown.png", lastOrderedDate: "Jan 18, 2025", orderFrequency: "Avg 1 per week" },
+    { id: "s4", productName: "Spinach, Fresh, 16 oz bags", packerId: "5566778", priceDisplay: "$1.99/bag", changePercent: 4.4, isIncrease: true, unit: "bag", unitPrice: 1.99, vendorId: "sysco", imageUrl: "/images/ingredients/Kale.png", lastOrderedDate: "Jan 11, 2025", orderFrequency: "3 per month" },
   ],
   "farmer-bros": [
     { id: "f1", productName: "Whole Bean Coffee", packerId: "551234", priceDisplay: "$8.99/lb", changePercent: 1.2, isIncrease: true, unit: "lb", unitPrice: 8.99, vendorId: "farmer-bros" },

@@ -62,6 +62,7 @@ function getIngredientImageUrl(ingredientName: string): string | null {
     Tomatoes: "Tomatoes.png",
     "Tomatoes bowl": "Tomatoes-bowl.png",
     Tortillas: "Tortillas.png",
+    Bread: "wheat-bread.png",
   };
   if (map[name]) return `${INGREDIENTS_IMAGE_BASE}/${map[name]}`;
   const slug = name.replace(/\s+/g, "-");
@@ -73,8 +74,16 @@ interface IngredientWithProducts {
   products: ProductRow[];
 }
 
-/** Dummy favorites for now: Eggs, Bell peppers, Salmon */
+/** Dummy favorites: Eggs, Bell peppers, Salmon, Bread */
 const FAVORITES_DUMMY: { ingredientName: string; products: ProductRow[] }[] = [
+  {
+    ingredientName: "Bread",
+    products: [
+      { id: 901, name: "Whole Wheat Bread, 20 oz loaves", vendorName: "Sysco", quantity: 1, unit: "loaf", price: 2.99, unitPrice: 2.99, unitPriceDisplay: "$2.99/loaf", isBestPrice: true },
+      { id: 902, name: "White sandwich bread 24-slice", vendorName: "US Foods", quantity: 1, unit: "loaf", price: 3.49, unitPrice: 3.49, unitPriceDisplay: "$3.49/loaf", isBestPrice: false },
+      { id: 903, name: "Sourdough bread 1 lb", vendorName: "Restaurant Depot", quantity: 1, unit: "loaf", price: 4.25, unitPrice: 4.25, unitPriceDisplay: "$4.25/loaf", isBestPrice: false },
+    ],
+  },
   {
     ingredientName: "Eggs",
     products: [
@@ -349,6 +358,17 @@ export function OrderGuideHome() {
         setIngredientsWithProducts([]);
       })
       .finally(() => setLoading(false));
+  }, []);
+
+  /** Ensure Bread group is always in favorites (e.g. after load or if state was saved without it). */
+  useEffect(() => {
+    setFavorites((prev) => {
+      const hasBread = prev.some((f) => f.ingredientName === "Bread");
+      if (hasBread) return prev;
+      const breadGroup = FAVORITES_DUMMY.find((f) => f.ingredientName === "Bread");
+      if (!breadGroup) return prev;
+      return [breadGroup, ...prev];
+    });
   }, []);
 
   const filteredForSearch = useMemo(() => {
@@ -766,6 +786,10 @@ export function OrderGuideHome() {
         open={!!selectedOrderId}
         onClose={() => setSelectedOrderId(null)}
         order={orderDetail}
+        onEdit={() => {
+          setSelectedOrderId(null);
+          setCreateOrderModalOpen(true);
+        }}
       />
 
       {createOrderModalOpen &&

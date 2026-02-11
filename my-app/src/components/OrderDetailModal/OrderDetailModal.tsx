@@ -26,6 +26,8 @@ export interface OrderDetailModalProps {
   open: boolean;
   onClose: () => void;
   order: OrderDetail | null;
+  /** Called when user clicks Edit on a draft order */
+  onEdit?: (order: OrderDetail) => void;
 }
 
 function formatCurrency(value: number) {
@@ -36,10 +38,11 @@ function formatCurrency(value: number) {
   }).format(value);
 }
 
-export function OrderDetailModal({ open, onClose, order }: OrderDetailModalProps) {
+export function OrderDetailModal({ open, onClose, order, onEdit }: OrderDetailModalProps) {
   if (!open) return null;
 
   const orderIdDisplay = order != null ? `Order #${order.orderId}` : "Order details";
+  const isDraft = order != null && order.status.toLowerCase() === "draft";
 
   return (
     <Modal open={open} onClose={onClose} variant="fullPage" aria-label="Order details">
@@ -58,9 +61,16 @@ export function OrderDetailModal({ open, onClose, order }: OrderDetailModalProps
           <Heading as="h1" className={styles.title}>
             {orderIdDisplay}
           </Heading>
-          <Button variant="secondary" onClick={() => {}}>
-            Send
-          </Button>
+          <div style={{ display: "flex", gap: "var(--space-2)" }}>
+            {isDraft && onEdit && order && (
+              <Button variant="secondary" onClick={() => onEdit(order)}>
+                Edit
+              </Button>
+            )}
+            <Button variant="secondary" onClick={() => {}}>
+              Send
+            </Button>
+          </div>
         </header>
 
         <div className={styles.contentScroll}>

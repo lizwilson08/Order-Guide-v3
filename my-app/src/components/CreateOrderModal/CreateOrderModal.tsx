@@ -301,81 +301,115 @@ export function CreateOrderModal({
                         <img src={MORE_ICON_SRC} alt="" className={styles.cardMoreIcon} />
                       </button>
                     </div>
-                    <ul className={styles.productList}>
-                      {filteredPriceChanges.length === 0 ? (
-                        <li className={styles.draftSummary}>
-                          {priceChanges.length === 0
-                            ? "No price changes for this vendor."
-                            : "No price changes match your search."}
-                        </li>
-                      ) : (
-                        filteredPriceChanges.map((p) => (
-                          <li key={p.id} className={styles.productRow}>
-                            {p.imageUrl ? (
-                              <img src={p.imageUrl} alt="" className={styles.productRowImg} />
-                            ) : (
-                              <div className={styles.productRowImg} aria-hidden />
-                            )}
-                            <div className={styles.productRowBody}>
-                              <span className={styles.productRowName}>{p.productName}</span>
-                              <span className={styles.productRowPacker}>Packer | {p.packerId}</span>
-                            </div>
-                            <div className={styles.productRowPriceBlock}>
-                              <span className={styles.productRowPrice}>{p.priceDisplay}</span>
-                              <span className={p.isIncrease ? styles.productRowUp : styles.productRowDown}>
-                                {p.changePercent}% {p.isIncrease ? "increase" : "decrease"}
-                              </span>
-                            </div>
-                            {(priceChangeQuantities[p.id] ?? 0) === 0 ? (
-                              <button
-                                type="button"
-                                className={styles.productRowPlusButton}
-                                onClick={() => setPriceChangeQuantity(p.id, 1)}
-                                aria-label={`Add ${p.productName} to order`}
-                              >
-                                +
-                              </button>
-                            ) : expandedStepper === `price-${p.id}` ? (
-                              <div
-                                ref={stepperContainerRef}
-                                className={styles.stepper}
-                                role="group"
-                                aria-label={`Quantity for ${p.productName}`}
-                              >
-                                <button
-                                  type="button"
-                                  className={styles.stepperBtn}
-                                  onClick={() => setPriceChangeQuantity(p.id, (priceChangeQuantities[p.id] ?? 1) - 1)}
-                                  aria-label="Decrease quantity"
-                                >
-                                  −
-                                </button>
-                                <span className={styles.stepperValue}>{priceChangeQuantities[p.id] ?? 1}</span>
-                                <button
-                                  type="button"
-                                  className={styles.stepperBtn}
-                                  onClick={() => setPriceChangeQuantity(p.id, (priceChangeQuantities[p.id] ?? 0) + 1)}
-                                  aria-label="Increase quantity"
-                                >
-                                  +
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-                                type="button"
-                                className={styles.productRowPlusButton}
-                                onClick={() => setExpandedStepper(`price-${p.id}`)}
-                                aria-label={`${p.productName} quantity: ${priceChangeQuantities[p.id] ?? 1}, click to change`}
-                              >
-                                <span className={styles.productRowPlusButtonQuantity}>
-                                  {priceChangeQuantities[p.id] ?? 1}
-                                </span>
-                              </button>
-                            )}
-                          </li>
-                        ))
-                      )}
-                    </ul>
+                    {filteredPriceChanges.length === 0 ? (
+                      <p className={styles.draftSummary}>
+                        {priceChanges.length === 0
+                          ? "No price changes for this vendor."
+                          : "No price changes match your search."}
+                      </p>
+                    ) : (
+                      <div className={styles.productTableWrap}>
+                        <table className={styles.productTable}>
+                          <thead>
+                            <tr>
+                              <th className={styles.productTableColProduct}>Product</th>
+                              <th className={styles.productTableColDate}>Last ordered</th>
+                              <th className={styles.productTableColCost}>Price</th>
+                              <th className={styles.productTableColAction} aria-label="Add to order" />
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredPriceChanges.map((p) => (
+                              <tr key={p.id}>
+                                <td className={styles.productTableColProduct}>
+                                  <div className={styles.productTableProduct}>
+                                    {p.imageUrl ? (
+                                      <img src={p.imageUrl} alt="" className={styles.productTableImg} />
+                                    ) : (
+                                      <div className={styles.productTableImg} aria-hidden />
+                                    )}
+                                    <div className={styles.productTableProductText}>
+                                      <span className={styles.productTableName}>{p.productName}</span>
+                                      <span className={styles.productTableMeta}>
+                                        {selectedVendor.name} | ID {p.packerId}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className={styles.productTableColDate}>
+                                  <div className={styles.productTableDateBlock}>
+                                    <span className={styles.productTableDate}>
+                                      {p.lastOrderedDate ?? "—"}
+                                    </span>
+                                    {p.orderFrequency && (
+                                      <span className={styles.productTableFrequency}>
+                                        {p.orderFrequency}
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className={styles.productTableColCost}>
+                                  <div className={styles.productTablePriceBlock}>
+                                    <span className={styles.productTableCost}>{p.priceDisplay}</span>
+                                    <span className={styles.productRowChangeMuted}>
+                                      {p.changePercent}% {p.isIncrease ? "increase" : "decrease"}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className={styles.productTableColAction}>
+                                  {(priceChangeQuantities[p.id] ?? 0) === 0 ? (
+                                    <button
+                                      type="button"
+                                      className={styles.productRowPlusButton}
+                                      onClick={() => setPriceChangeQuantity(p.id, 1)}
+                                      aria-label={`Add ${p.productName} to order`}
+                                    >
+                                      +
+                                    </button>
+                                  ) : expandedStepper === `price-${p.id}` ? (
+                                    <div
+                                      ref={stepperContainerRef}
+                                      className={styles.stepper}
+                                      role="group"
+                                      aria-label={`Quantity for ${p.productName}`}
+                                    >
+                                      <button
+                                        type="button"
+                                        className={styles.stepperBtn}
+                                        onClick={() => setPriceChangeQuantity(p.id, (priceChangeQuantities[p.id] ?? 1) - 1)}
+                                        aria-label="Decrease quantity"
+                                      >
+                                        −
+                                      </button>
+                                      <span className={styles.stepperValue}>{priceChangeQuantities[p.id] ?? 1}</span>
+                                      <button
+                                        type="button"
+                                        className={styles.stepperBtn}
+                                        onClick={() => setPriceChangeQuantity(p.id, (priceChangeQuantities[p.id] ?? 0) + 1)}
+                                        aria-label="Increase quantity"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      className={styles.productRowPlusButton}
+                                      onClick={() => setExpandedStepper(`price-${p.id}`)}
+                                      aria-label={`${p.productName} quantity: ${priceChangeQuantities[p.id] ?? 1}, click to change`}
+                                    >
+                                      <span className={styles.productRowPlusButtonQuantity}>
+                                        {priceChangeQuantities[p.id] ?? 1}
+                                      </span>
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
                   </section>
 
                   <section>
@@ -385,88 +419,121 @@ export function CreateOrderModal({
                         <img src={MORE_ICON_SRC} alt="" className={styles.cardMoreIcon} />
                       </button>
                     </div>
-                    <ul className={styles.productList}>
-                      {filteredRecentIndices.length === 0 ? (
-                        <li className={styles.draftSummary}>
-                          {recentProducts.length === 0
-                            ? "No regulars for this vendor."
-                            : "No regulars match your search."}
-                        </li>
-                      ) : (
-                        filteredRecentIndices.map((origIndex) => {
-                          const p = recentProducts[origIndex];
-                          const priceDisp = p.priceDisplay ?? `${formatCurrency(p.unitPrice)}/${p.unit}`;
-                          const packerLine = p.packerId ? `Packer | ${p.packerId}` : "Regular";
-                          const changePercent = p.changePercent ?? 0;
-                          const isIncrease = p.isIncrease ?? false;
-                          return (
-                            <li key={origIndex} className={styles.productRow}>
-                              {p.imageUrl ? (
-                                <img src={p.imageUrl} alt="" className={styles.productRowImg} />
-                              ) : (
-                                <div className={styles.productRowImg} aria-hidden />
-                              )}
-                              <div className={styles.productRowBody}>
-                                <span className={styles.productRowName}>{p.productName}</span>
-                                <span className={styles.productRowPacker}>{packerLine}</span>
-                              </div>
-                              <div className={styles.productRowPriceBlock}>
-                                <span className={styles.productRowPrice}>{priceDisp}</span>
-                                <span className={styles.productRowChangeMuted}>
-                                  {changePercent}% {isIncrease ? "increase" : "decrease"}
-                                </span>
-                              </div>
-                              {(recentQuantities[origIndex] ?? 0) === 0 ? (
-                                <button
-                                  type="button"
-                                  className={styles.productRowPlusButton}
-                                  onClick={() => setRecentQuantity(origIndex, 1)}
-                                  aria-label={`Add ${p.productName} to order`}
-                                >
-                                  +
-                                </button>
-                              ) : expandedStepper === `recent-${origIndex}` ? (
-                                <div
-                                  ref={stepperContainerRef}
-                                  className={styles.stepper}
-                                  role="group"
-                                  aria-label={`Quantity for ${p.productName}`}
-                                >
-                                  <button
-                                    type="button"
-                                    className={styles.stepperBtn}
-                                    onClick={() => setRecentQuantity(origIndex, (recentQuantities[origIndex] ?? 1) - 1)}
-                                    aria-label="Decrease quantity"
-                                  >
-                                    −
-                                  </button>
-                                  <span className={styles.stepperValue}>{recentQuantities[origIndex] ?? 1}</span>
-                                  <button
-                                    type="button"
-                                    className={styles.stepperBtn}
-                                    onClick={() => setRecentQuantity(origIndex, (recentQuantities[origIndex] ?? 0) + 1)}
-                                    aria-label="Increase quantity"
-                                  >
-                                    +
-                                  </button>
-                                </div>
-                              ) : (
-                                <button
-                                  type="button"
-                                  className={styles.productRowPlusButton}
-                                  onClick={() => setExpandedStepper(`recent-${origIndex}`)}
-                                  aria-label={`${p.productName} quantity: ${recentQuantities[origIndex] ?? 1}, click to change`}
-                                >
-                                  <span className={styles.productRowPlusButtonQuantity}>
-                                    {recentQuantities[origIndex] ?? 1}
-                                  </span>
-                                </button>
-                              )}
-                            </li>
-                          );
-                        })
-                      )}
-                    </ul>
+                    {filteredRecentIndices.length === 0 ? (
+                      <p className={styles.draftSummary}>
+                        {recentProducts.length === 0
+                          ? "No regulars for this vendor."
+                          : "No regulars match your search."}
+                      </p>
+                    ) : (
+                      <div className={styles.productTableWrap}>
+                        <table className={styles.productTable}>
+                          <thead>
+                            <tr>
+                              <th className={styles.productTableColProduct}>Product</th>
+                              <th className={styles.productTableColDate}>Last ordered</th>
+                              <th className={styles.productTableColCost}>Price</th>
+                              <th className={styles.productTableColAction} aria-label="Add to order" />
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredRecentIndices.map((origIndex) => {
+                              const p = recentProducts[origIndex];
+                              const priceDisp = p.priceDisplay ?? `${formatCurrency(p.unitPrice)}/${p.unit}`;
+                              const changePercent = p.changePercent ?? 0;
+                              const isIncrease = p.isIncrease ?? false;
+                              return (
+                                <tr key={origIndex}>
+                                  <td className={styles.productTableColProduct}>
+                                    <div className={styles.productTableProduct}>
+                                      {p.imageUrl ? (
+                                        <img src={p.imageUrl} alt="" className={styles.productTableImg} />
+                                      ) : (
+                                        <div className={styles.productTableImg} aria-hidden />
+                                      )}
+                                      <div className={styles.productTableProductText}>
+                                        <span className={styles.productTableName}>{p.productName}</span>
+                                        <span className={styles.productTableMeta}>
+                                          {selectedVendor.name} | ID {p.packerId ?? "—"}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className={styles.productTableColDate}>
+                                    <div className={styles.productTableDateBlock}>
+                                      <span className={styles.productTableDate}>
+                                        {p.lastOrderedDate ?? "—"}
+                                      </span>
+                                      {p.orderFrequency && (
+                                        <span className={styles.productTableFrequency}>
+                                          {p.orderFrequency}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </td>
+                                  <td className={styles.productTableColCost}>
+                                    <div className={styles.productTablePriceBlock}>
+                                      <span className={styles.productTableCost}>{priceDisp}</span>
+                                      <span className={styles.productRowChangeMuted}>
+                                        {changePercent}% {isIncrease ? "increase" : "decrease"}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className={styles.productTableColAction}>
+                                    {(recentQuantities[origIndex] ?? 0) === 0 ? (
+                                      <button
+                                        type="button"
+                                        className={styles.productRowPlusButton}
+                                        onClick={() => setRecentQuantity(origIndex, 1)}
+                                        aria-label={`Add ${p.productName} to order`}
+                                      >
+                                        +
+                                      </button>
+                                    ) : expandedStepper === `recent-${origIndex}` ? (
+                                      <div
+                                        ref={stepperContainerRef}
+                                        className={styles.stepper}
+                                        role="group"
+                                        aria-label={`Quantity for ${p.productName}`}
+                                      >
+                                        <button
+                                          type="button"
+                                          className={styles.stepperBtn}
+                                          onClick={() => setRecentQuantity(origIndex, (recentQuantities[origIndex] ?? 1) - 1)}
+                                          aria-label="Decrease quantity"
+                                        >
+                                          −
+                                        </button>
+                                        <span className={styles.stepperValue}>{recentQuantities[origIndex] ?? 1}</span>
+                                        <button
+                                          type="button"
+                                          className={styles.stepperBtn}
+                                          onClick={() => setRecentQuantity(origIndex, (recentQuantities[origIndex] ?? 0) + 1)}
+                                          aria-label="Increase quantity"
+                                        >
+                                          +
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        className={styles.productRowPlusButton}
+                                        onClick={() => setExpandedStepper(`recent-${origIndex}`)}
+                                        aria-label={`${p.productName} quantity: ${recentQuantities[origIndex] ?? 1}, click to change`}
+                                      >
+                                        <span className={styles.productRowPlusButtonQuantity}>
+                                          {recentQuantities[origIndex] ?? 1}
+                                        </span>
+                                      </button>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
                   </section>
 
                   <div className={styles.searchAllCard}>
