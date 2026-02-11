@@ -9,6 +9,8 @@ export interface ModalProps {
   variant?: "partialTop" | "center" | "fullPage";
   /** Optional aria label for the dialog */
   "aria-label"?: string;
+  /** Optional z-index for stacking (e.g. 1100 for modal above another modal) */
+  zIndex?: number;
 }
 
 export function Modal({
@@ -17,12 +19,16 @@ export function Modal({
   children,
   variant = "partialTop",
   "aria-label": ariaLabel,
+  zIndex,
 }: ModalProps) {
   if (!open) return null;
 
+  const layerStyle = zIndex != null ? { zIndex } : undefined;
+
   return (
     <div
-      className={styles.backdrop}
+      className={`${styles.backdrop} ${variant === "fullPage" ? styles.backdropFullPage : ""}`}
+      style={layerStyle}
       onClick={(e) => e.target === e.currentTarget && onClose()}
       role="presentation"
     >
@@ -33,7 +39,9 @@ export function Modal({
         aria-label={ariaLabel}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={styles.panelContent}>
+        <div
+          className={`${styles.panelContent} ${variant === "fullPage" ? styles.panelContentFullPage : ""}`}
+        >
           {children}
         </div>
       </div>

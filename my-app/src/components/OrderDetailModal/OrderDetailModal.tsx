@@ -37,79 +37,90 @@ function formatCurrency(value: number) {
 }
 
 export function OrderDetailModal({ open, onClose, order }: OrderDetailModalProps) {
-  if (!order) return null;
+  if (!open) return null;
+
+  const orderIdDisplay = order != null ? `Order #${order.orderId}` : "Order details";
 
   return (
     <Modal open={open} onClose={onClose} variant="fullPage" aria-label="Order details">
-      <div className={styles.content}>
+      <div className={styles.wrapper} data-order-modal="full-page-v2">
         <header className={styles.header}>
-          <div className={styles.headerLeft}>
-            <Button
-              type="button"
-              variant="secondary"
-              shape="circle"
-              onClick={onClose}
-              aria-label="Close"
-              className={styles.closeButton}
-            >
-              <img src={CLOSE_ICON_SRC} alt="" className={styles.closeIcon} />
-            </Button>
-            <div className={styles.titleBlock}>
-              <Heading as="h1" className={styles.title}>
-                Order #{order.orderId}
-              </Heading>
-              <Badge variant={order.status === "Cancelled" ? "default" : "default"}>
-                {order.status}
-              </Badge>
-            </div>
-          </div>
+          <Button
+            type="button"
+            variant="secondary"
+            shape="circle"
+            onClick={onClose}
+            aria-label="Close"
+            className={styles.closeButton}
+          >
+            <img src={CLOSE_ICON_SRC} alt="" className={styles.closeIcon} />
+          </Button>
+          <Heading as="h1" className={styles.title}>
+            {orderIdDisplay}
+          </Heading>
+          <Button variant="secondary" onClick={() => {}}>
+            Send
+          </Button>
         </header>
 
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Vendor</h2>
-          <div className={styles.vendorDetails}>
-            <p className={styles.vendorName}>{order.vendorName}</p>
-            {order.vendorContact && (
-              <p className={styles.vendorContact}>{order.vendorContact}</p>
-            )}
-            {order.vendorEmail && (
-              <p className={styles.vendorEmail}>{order.vendorEmail}</p>
+        <div className={styles.contentScroll}>
+          <div className={styles.content}>
+            {order ? (
+              <>
+                <div className={styles.orderSummaryCard}>
+                  <div className={styles.orderSummaryRow}>
+                    <span className={styles.orderSummaryLabel}>Vendor</span>
+                    <span className={styles.orderSummaryValue}>{order.vendorName}</span>
+                  </div>
+                  <div className={styles.orderSummaryRow}>
+                    <span className={styles.orderSummaryLabel}>Total</span>
+                    <span className={styles.orderSummaryValueBold}>{formatCurrency(order.total)}</span>
+                  </div>
+                  <div className={styles.orderSummaryRow}>
+                    <span className={styles.orderSummaryLabel}>Status</span>
+                    <Badge variant={order.status === "Cancelled" ? "default" : "warning"}>
+                      {order.status}
+                    </Badge>
+                  </div>
+                </div>
+
+                <section className={styles.section}>
+                  <div className={styles.tableWrap}>
+                    <table className={styles.table}>
+                      <thead>
+                        <tr>
+                          <th className={styles.colProduct}>Product</th>
+                          <th className={styles.colRight}>Quantity</th>
+                          <th className={styles.colRight}>Unit</th>
+                          <th className={styles.colRight}>Unit cost</th>
+                          <th className={styles.colRight}>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {order.lineItems.map((line, i) => (
+                          <tr key={i}>
+                            <td className={styles.colProduct}>{line.productName}</td>
+                            <td className={styles.colRight}>{line.quantity}</td>
+                            <td className={styles.colRight}>{line.unit}</td>
+                            <td className={styles.colRight}>{formatCurrency(line.unitPrice)}</td>
+                            <td className={styles.colRight}>{formatCurrency(line.lineTotal)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <section className={styles.totalSection}>
+                  <span className={styles.totalLabel}>Total</span>
+                  <span className={styles.totalValue}>{formatCurrency(order.total)}</span>
+                </section>
+              </>
+            ) : (
+              <p className={styles.emptyMessage}>Order not found.</p>
             )}
           </div>
-        </section>
-
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Products</h2>
-          <div className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th className={styles.colProduct}>Product</th>
-                  <th className={styles.colRight}>Quantity</th>
-                  <th className={styles.colRight}>Unit</th>
-                  <th className={styles.colRight}>Unit price</th>
-                  <th className={styles.colRight}>Line total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {order.lineItems.map((line, i) => (
-                  <tr key={i}>
-                    <td className={styles.colProduct}>{line.productName}</td>
-                    <td className={styles.colRight}>{line.quantity}</td>
-                    <td className={styles.colRight}>{line.unit}</td>
-                    <td className={styles.colRight}>{formatCurrency(line.unitPrice)}</td>
-                    <td className={styles.colRight}>{formatCurrency(line.lineTotal)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section className={styles.totalSection}>
-          <span className={styles.totalLabel}>Total</span>
-          <span className={styles.totalValue}>{formatCurrency(order.total)}</span>
-        </section>
+        </div>
       </div>
     </Modal>
   );

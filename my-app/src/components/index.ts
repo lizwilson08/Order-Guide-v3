@@ -42,3 +42,9 @@ export type {
   OrderDetail,
   OrderLineItem,
 } from "./OrderDetailModal/OrderDetailModal";
+
+export { CreateOrderModal } from "./CreateOrderModal/CreateOrderModal";
+export type { CreateOrderModalProps } from "./CreateOrderModal/CreateOrderModal";
+
+export { SearchProductsModal } from "./SearchProductsModal/SearchProductsModal";
+export type { SearchProductsModalProps } from "./SearchProductsModal/SearchProductsModal";

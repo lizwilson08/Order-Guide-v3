@@ -8,6 +8,11 @@
   justify-content: center;
 }
 
+.backdropFullPage {
+  align-items: stretch;
+  justify-content: stretch;
+}
+
 .panel {
   background-color: var(--color-surface);
   border-radius: 20px;
@@ -39,4 +44,12 @@
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+}
+
+/* Full page: content area fills panel and inner content scrolls */
+.panelContentFullPage {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
 }

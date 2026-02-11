@@ -3,7 +3,7 @@ import { api } from "../api/client";
 import type { Ingredient } from "../types";
 import type { ProductRow } from "../components/ProductComparisonGroup";
 import { ProductComparisonGroup } from "../components/ProductComparisonGroup";
-import { Button, Select, Heading, Input, Loading, Badge, Table, EditFavoritesModal, EditGroupModal, OrderDetailModal } from "../components";
+import { Button, Select, Heading, Input, Loading, Badge, Table, EditFavoritesModal, EditGroupModal, OrderDetailModal, CreateOrderModal } from "../components";
 import type { FavoriteGroupItem } from "../components";
 import type { OrderDetail } from "../components";
 import type { Column } from "../components/Table/Table";
@@ -144,9 +144,9 @@ interface ActiveOrderRow {
   status: "pending" | "draft";
 }
 const ACTIVE_ORDERS_DUMMY: ActiveOrderRow[] = [
-  { id: "1", vendorName: "JD Foods", productCount: 36, total: 287.17, status: "pending" },
-  { id: "2", vendorName: "Farmer Brothers", productCount: 80, total: 287.17, status: "draft" },
-  { id: "3", vendorName: "Sysco", productCount: 80, total: 287.17, status: "draft" },
+  { id: "105", vendorName: "JD Foods", productCount: 36, total: 287.17, status: "pending" },
+  { id: "106", vendorName: "Farmer Brothers", productCount: 80, total: 486.96, status: "draft" },
+  { id: "107", vendorName: "Sysco", productCount: 80, total: 287.17, status: "draft" },
 ];
 
 /** Potential savings stat for profitability cards */
@@ -198,11 +198,11 @@ interface PastOrderRow {
   total: string;
 }
 const PAST_ORDERS_DUMMY: PastOrderRow[] = [
-  { id: 125, orderId: 125, status: "Completed", vendor: "Sysco", total: "$1,289.00" },
-  { id: 124, orderId: 124, status: "Completed", vendor: "US Foods", total: "$938.00" },
-  { id: 123, orderId: 123, status: "Cancelled", vendor: "Meat Market", total: "$445.00" },
-  { id: 122, orderId: 122, status: "Completed", vendor: "Farmer Brothers", total: "$612.50" },
-  { id: 121, orderId: 121, status: "Completed", vendor: "Fishmonger", total: "$320.00" },
+  { id: 104, orderId: 104, status: "Completed", vendor: "Sysco", total: "$1,289.00" },
+  { id: 103, orderId: 103, status: "Completed", vendor: "US Foods", total: "$938.00" },
+  { id: 102, orderId: 102, status: "Cancelled", vendor: "Meat Market", total: "$445.00" },
+  { id: 101, orderId: 101, status: "Completed", vendor: "Farmer Brothers", total: "$612.50" },
+  { id: 100, orderId: 100, status: "Completed", vendor: "Fishmonger", total: "$320.00" },
 ];
 
 const PAST_ORDERS_COLUMNS: Column<PastOrderRow>[] = [
@@ -212,44 +212,51 @@ const PAST_ORDERS_COLUMNS: Column<PastOrderRow>[] = [
   { key: "total", header: "Total" },
 ];
 
-/** Dummy order details for full-page order modal (active + past orders) */
+/** Dummy order details for full-page order modal (active + past orders). Order numbers 100–104 = past (oldest first), 105–107 = active. */
 const ORDER_DETAILS_DUMMY: Record<string, OrderDetail> = {
-  "1": {
-    orderId: "1",
-    vendorName: "JD Foods",
-    vendorContact: "555-0101",
-    vendorEmail: "orders@jdfoods.com",
-    status: "Pending",
-    total: 287.17,
+  "100": {
+    orderId: 100,
+    vendorName: "Fishmonger",
+    status: "Completed",
+    total: 320,
     lineItems: [
-      { productName: "Organic Tomatoes", quantity: 12, unit: "cs", unitPrice: 18.5, lineTotal: 222 },
-      { productName: "Romaine Lettuce", quantity: 6, unit: "cs", unitPrice: 10.89, lineTotal: 65.34 },
+      { productName: "Fresh Cod", quantity: 16, unit: "lb", unitPrice: 12, lineTotal: 192 },
+      { productName: "Shrimp 16/20", quantity: 8, unit: "lb", unitPrice: 16, lineTotal: 128 },
     ],
   },
-  "2": {
-    orderId: "2",
+  "101": {
+    orderId: 101,
     vendorName: "Farmer Brothers",
-    vendorContact: "555-0102",
-    status: "Draft",
-    total: 287.17,
+    status: "Completed",
+    total: 612.5,
     lineItems: [
-      { productName: "Whole Bean Coffee", quantity: 4, unit: "lb", unitPrice: 8.99, lineTotal: 35.96 },
-      { productName: "Half & Half", quantity: 8, unit: "gal", unitPrice: 28.5, lineTotal: 228 },
+      { productName: "Coffee Beans", quantity: 25, unit: "lb", unitPrice: 8.5, lineTotal: 212.5 },
+      { productName: "Tea Bags", quantity: 10, unit: "cs", unitPrice: 40, lineTotal: 400 },
     ],
   },
-  "3": {
-    orderId: "3",
-    vendorName: "Sysco",
-    vendorEmail: "account@sysco.com",
-    status: "Draft",
-    total: 287.17,
+  "102": {
+    orderId: 102,
+    vendorName: "Meat Market",
+    status: "Cancelled",
+    total: 445,
     lineItems: [
-      { productName: "Chicken Breast", quantity: 20, unit: "lb", unitPrice: 3.99, lineTotal: 79.8 },
-      { productName: "Vegetable Oil", quantity: 6, unit: "gal", unitPrice: 24.5, lineTotal: 147 },
+      { productName: "Ribeye Steak", quantity: 20, unit: "lb", unitPrice: 14.99, lineTotal: 299.8 },
+      { productName: "Pork Chops", quantity: 15, unit: "lb", unitPrice: 9.67, lineTotal: 145.05 },
     ],
   },
-  "125": {
-    orderId: 125,
+  "103": {
+    orderId: 103,
+    vendorName: "US Foods",
+    status: "Completed",
+    total: 938,
+    lineItems: [
+      { productName: "Salmon Fillet", quantity: 30, unit: "lb", unitPrice: 12.5, lineTotal: 375 },
+      { productName: "Mixed Greens", quantity: 15, unit: "cs", unitPrice: 28, lineTotal: 420 },
+      { productName: "Balsamic Vinegar", quantity: 6, unit: "bts", unitPrice: 23.83, lineTotal: 142.98 },
+    ],
+  },
+  "104": {
+    orderId: 104,
     vendorName: "Sysco",
     vendorContact: "555-0201",
     status: "Completed",
@@ -260,45 +267,43 @@ const ORDER_DETAILS_DUMMY: Record<string, OrderDetail> = {
       { productName: "Olive Oil", quantity: 12, unit: "bts", unitPrice: 24.5, lineTotal: 294 },
     ],
   },
-  "124": {
-    orderId: 124,
-    vendorName: "US Foods",
-    status: "Completed",
-    total: 938,
+  "105": {
+    orderId: 105,
+    vendorName: "JD Foods",
+    vendorContact: "555-0101",
+    vendorEmail: "orders@jdfoods.com",
+    status: "Pending",
+    total: 287.17,
     lineItems: [
-      { productName: "Salmon Fillet", quantity: 30, unit: "lb", unitPrice: 12.5, lineTotal: 375 },
-      { productName: "Mixed Greens", quantity: 15, unit: "cs", unitPrice: 28, lineTotal: 420 },
-      { productName: "Balsamic Vinegar", quantity: 6, unit: "bts", unitPrice: 23.83, lineTotal: 142.98 },
+      { productName: "Organic Tomatoes", quantity: 12, unit: "cs", unitPrice: 18.5, lineTotal: 222 },
+      { productName: "Romaine Lettuce", quantity: 6, unit: "cs", unitPrice: 10.89, lineTotal: 65.34 },
     ],
   },
-  "123": {
-    orderId: 123,
-    vendorName: "Meat Market",
-    status: "Cancelled",
-    total: 445,
-    lineItems: [
-      { productName: "Ribeye Steak", quantity: 20, unit: "lb", unitPrice: 14.99, lineTotal: 299.8 },
-      { productName: "Pork Chops", quantity: 15, unit: "lb", unitPrice: 9.67, lineTotal: 145.05 },
-    ],
-  },
-  "122": {
-    orderId: 122,
+  "106": {
+    orderId: 106,
     vendorName: "Farmer Brothers",
-    status: "Completed",
-    total: 612.5,
+    vendorContact: "555-0102",
+    status: "Draft",
+    total: 486.96,
     lineItems: [
-      { productName: "Coffee Beans", quantity: 25, unit: "lb", unitPrice: 8.5, lineTotal: 212.5 },
-      { productName: "Tea Bags", quantity: 10, unit: "cs", unitPrice: 40, lineTotal: 400 },
+      { productName: "Whole Bean Coffee", quantity: 4, unit: "lb", unitPrice: 8.99, lineTotal: 35.96 },
+      { productName: "Half & Half", quantity: 8, unit: "gal", unitPrice: 28.5, lineTotal: 228 },
+      { productName: "Decaf Coffee", quantity: 2, unit: "lb", unitPrice: 9.5, lineTotal: 19 },
+      { productName: "Tea Bags English Breakfast", quantity: 5, unit: "cs", unitPrice: 18, lineTotal: 90 },
+      { productName: "Sugar Packets", quantity: 10, unit: "cs", unitPrice: 4.5, lineTotal: 45 },
+      { productName: "Creamer Powder", quantity: 3, unit: "lb", unitPrice: 12, lineTotal: 36 },
+      { productName: "Hot Chocolate Mix", quantity: 4, unit: "lb", unitPrice: 8.25, lineTotal: 33 },
     ],
   },
-  "121": {
-    orderId: 121,
-    vendorName: "Fishmonger",
-    status: "Completed",
-    total: 320,
+  "107": {
+    orderId: 107,
+    vendorName: "Sysco",
+    vendorEmail: "account@sysco.com",
+    status: "Draft",
+    total: 287.17,
     lineItems: [
-      { productName: "Fresh Cod", quantity: 16, unit: "lb", unitPrice: 12, lineTotal: 192 },
-      { productName: "Shrimp 16/20", quantity: 8, unit: "lb", unitPrice: 16, lineTotal: 128 },
+      { productName: "Chicken Breast", quantity: 20, unit: "lb", unitPrice: 3.99, lineTotal: 79.8 },
+      { productName: "Vegetable Oil", quantity: 6, unit: "gal", unitPrice: 24.5, lineTotal: 147 },
     ],
   },
 };
@@ -322,6 +327,7 @@ export function OrderGuideHome() {
   const [editGroupSource, setEditGroupSource] = useState<"main" | "favorites" | null>(null);
   const [editedGroups, setEditedGroups] = useState<Record<string, { ingredientName: string; products: ProductRow[] }>>({});
   const [selectedOrderId, setSelectedOrderId] = useState<string | number | null>(null);
+  const [createOrderModalOpen, setCreateOrderModalOpen] = useState(false);
 
   useEffect(() => {
     api.ingredients
@@ -501,7 +507,7 @@ export function OrderGuideHome() {
               aria-label="Actions"
             />
           </div>
-          <Button variant="primary" onClick={() => {}}>
+          <Button variant="primary" onClick={() => setCreateOrderModalOpen(true)}>
             Create order
           </Button>
         </div>
@@ -754,6 +760,11 @@ export function OrderGuideHome() {
         open={!!selectedOrderId}
         onClose={() => setSelectedOrderId(null)}
         order={orderDetail}
+      />
+
+      <CreateOrderModal
+        open={createOrderModalOpen}
+        onClose={() => setCreateOrderModalOpen(false)}
       />
 
       {activeTab === "orders" && (
