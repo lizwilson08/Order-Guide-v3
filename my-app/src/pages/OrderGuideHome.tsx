@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { api } from "../api/client";
 import type { Ingredient } from "../types";
 import type { ProductRow } from "../components/ProductComparisonGroup";
@@ -507,7 +508,12 @@ export function OrderGuideHome() {
               aria-label="Actions"
             />
           </div>
-          <Button variant="primary" onClick={() => setCreateOrderModalOpen(true)}>
+          <Button
+            variant="primary"
+            type="button"
+            onClick={() => setCreateOrderModalOpen(true)}
+            aria-label="Create order"
+          >
             Create order
           </Button>
         </div>
@@ -762,10 +768,14 @@ export function OrderGuideHome() {
         order={orderDetail}
       />
 
-      <CreateOrderModal
-        open={createOrderModalOpen}
-        onClose={() => setCreateOrderModalOpen(false)}
-      />
+      {createOrderModalOpen &&
+        createPortal(
+          <CreateOrderModal
+            open={true}
+            onClose={() => setCreateOrderModalOpen(false)}
+          />,
+          document.body
+        )}
 
       {activeTab === "orders" && (
         <main className={styles.main}>

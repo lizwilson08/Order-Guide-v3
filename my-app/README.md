@@ -21,7 +21,7 @@ npm install
 npm run dev       # start Vite dev server (proxies /api to backend)
 ```
 
-Open http://localhost:5173. Use **Order Guide** for ingredient comparison, **Shopping lists**, and **Purchase orders**. Open **Design System** to view core UI components.
+Open http://localhost:5174. Use **Order Guide** for ingredient comparison, **Shopping lists**, and **Purchase orders**. Open **Design System** to view core UI components.
 
 ## Stack
 

@@ -12,7 +12,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: 24px 24px 40px;
+  padding: 24px 24px 32px;
   flex-shrink: 0;
 }
 
@@ -59,6 +59,12 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.contentScroll::-webkit-scrollbar {
+  display: none;
 }
 
 .vendorContent {
@@ -68,17 +74,18 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-8);
 }
 
 .vendorTitle {
   font-family: var(--font-sans);
-  font-size: var(--font-size-h2);
+  font-size: var(--font-size-h1);
   font-weight: var(--font-weight-semibold);
   letter-spacing: -0.02em;
   color: var(--color-text-primary);
   margin: 0;
+  text-align: left;
 }
 
 .vendorGrid {
@@ -113,10 +120,9 @@
 }
 
 .vendorLogo {
-  max-width: 100%;
-  max-height: 100%;
+  height: 32px;
   width: auto;
-  height: auto;
+  max-width: 100%;
   object-fit: contain;
 }
 
@@ -131,17 +137,147 @@
   gap: var(--space-8);
 }
 
-.vendorLogoWrap {
+/* Toolbar: vendor logo above, then search + filter row */
+.productsToolbar {
   display: flex;
-  justify-content: flex-start;
-  margin-bottom: var(--space-2);
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  width: 100%;
 }
 
-.vendorLogoInContent {
-  height: 48px;
+.vendorLogoRowWrap {
+  width: 100%;
+}
+
+.vendorLogoRow {
+  height: 32px;
   width: auto;
-  max-width: 160px;
+  max-width: 140px;
   object-fit: contain;
+  flex-shrink: 0;
+}
+
+.searchFilterRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.searchFieldWrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  padding: 10px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.searchFieldWrap:hover {
+  border-color: var(--color-neutral-400);
+}
+
+.searchFieldWrap:focus-within {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-muted);
+}
+
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  object-fit: contain;
+  color: var(--color-text-muted);
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-normal);
+}
+
+.searchInput:focus {
+  outline: none;
+}
+
+/* Category filter – matches profitability page filter buttons */
+.filterButton {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: var(--space-2) var(--space-4);
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filterButtonVisual {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  pointer-events: none;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+}
+
+.filterButtonLabel {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-normal);
+}
+
+.filterButtonValue {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.filterButtonSelect {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+  font-size: var(--font-size-body-sm);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.filterButtonSelect:hover {
+  background: transparent;
+}
+
+.filterButtonSelect:focus {
+  outline: none;
+}
+
+.filterButtonSelect option {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
 }
 
 .sectionHeader {
@@ -179,8 +315,8 @@
 }
 
 .cardMoreIcon {
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
   display: block;
   object-fit: contain;
 }
@@ -194,7 +330,7 @@
   gap: 0;
 }
 
-/* Row: checkbox, image, body (name + packer), price block – matches OrderGuideHome price change row */
+/* Row: plus button, image, body (name + packer), price block */
 .productRow {
   display: flex;
   align-items: center;
@@ -208,8 +344,95 @@
   border-bottom: none;
 }
 
-.productRowCheckbox {
+.productRowPlusButton {
   flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  margin-left: 12px; /* gap is 12px, total 24px between price and button */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: var(--font-weight-normal);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.productRowPlusButton:hover {
+  background-color: var(--button-secondary-bg-hover);
+  color: var(--button-secondary-text);
+}
+
+.productRowPlusButton:active {
+  background-color: var(--button-secondary-bg-active);
+}
+
+.productRowPlusButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-muted);
+}
+
+.productRowPlusButtonQuantity {
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Quantity stepper (pill with −/value/+) */
+.stepper {
+  flex-shrink: 0;
+  margin-left: 12px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 2px;
+  gap: 0;
+}
+
+.stepperBtn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: var(--font-weight-normal);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.stepperBtn:hover {
+  background-color: var(--button-secondary-bg-hover);
+}
+
+.stepperBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-muted);
+}
+
+.stepperValue {
+  min-width: 24px;
+  padding: 0 var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  text-align: center;
 }
 
 .productRowImg {
@@ -273,20 +496,63 @@
   flex-shrink: 0;
 }
 
-.searchLink {
+/* Regulars section: % change as neutral gray, regular weight */
+.productRowChangeMuted {
   font-family: var(--font-sans);
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-primary);
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  text-decoration: underline;
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
 }
 
-.searchLink:hover {
-  color: var(--color-primary-hover);
+/* Search all products card (Figma 4186-27038) */
+.searchAllCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.searchAllCardIcon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.searchAllCardCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.searchAllCardHeading {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.searchAllCardText {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.searchAllCardButton {
+  margin-top: var(--space-3);
 }
 
 .draftSummary {
@@ -294,4 +560,51 @@
   font-size: var(--font-size-body-sm);
   color: var(--color-text-muted);
   margin: 0;
+}
+
+/* Bottom bar (products step): product count, subtotal, % to minimum – Figma 4186-26682 */
+.bottomBar {
+  flex-shrink: 0;
+  padding: var(--space-4) 24px;
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  border-radius: 12px 12px 0 0;
+}
+
+.bottomBarInner {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.bottomBarProducts {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+}
+
+.bottomBarRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.bottomBarSubtotal {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.bottomBarMinimum {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);
 }

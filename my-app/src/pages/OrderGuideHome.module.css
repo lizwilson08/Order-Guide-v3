@@ -476,6 +476,12 @@
 }
 
 /* Orders tab – two-column top */
+.ordersActionsRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-4);
+}
+
 .ordersTopRow {
   display: grid;
   grid-template-columns: 1fr 1fr;

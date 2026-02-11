@@ -44,6 +44,12 @@
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.panelContent::-webkit-scrollbar {
+  display: none;
 }
 
 /* Full page: content area fills panel and inner content scrolls */

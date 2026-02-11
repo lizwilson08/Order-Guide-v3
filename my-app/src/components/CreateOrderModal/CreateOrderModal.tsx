@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Modal } from "../Modal/Modal";
-import { Button, Heading, Checkbox } from "../index";
+import { Button, Heading } from "../index";
 import type { OrderLineItem } from "../OrderDetailModal/OrderDetailModal";
 import orderDetailStyles from "../OrderDetailModal/OrderDetailModal.module.css";
 import {
@@ -17,6 +17,8 @@ import styles from "./CreateOrderModal.module.css";
 const CLOSE_ICON_SRC = "/images/icons/X.png";
 const BACK_ICON_SRC = "/images/icons/back-arrow.png";
 const MORE_ICON_SRC = "/images/icons/more.png";
+const SEARCH_ICON_SRC = "/images/icons/search.png";
+const FORK_KNIFE_ICON_SRC = "/images/icons/fork-knife.png";
 
 export interface CreateOrderModalProps {
   open: boolean;
@@ -55,37 +57,60 @@ export function CreateOrderModal({
   const [selectedVendor, setSelectedVendor] = useState<CreateOrderVendor | null>(null);
   const [draftLineItems, setDraftLineItems] = useState<OrderLineItem[]>([]);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
-  const [selectedRecentIds, setSelectedRecentIds] = useState<Set<number>>(new Set());
-  const [selectedPriceChangeIds, setSelectedPriceChangeIds] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [recentQuantities, setRecentQuantities] = useState<Record<number, number>>({});
+  const [priceChangeQuantities, setPriceChangeQuantities] = useState<Record<string, number>>({});
   const [searchAddedItems, setSearchAddedItems] = useState<OrderLineItem[]>([]);
+  const [expandedStepper, setExpandedStepper] = useState<string | null>(null);
+  const stepperContainerRef = useRef<HTMLDivElement | null>(null);
 
   if (!open) return null;
+
+  useEffect(() => {
+    if (step !== "products" || !expandedStepper) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        stepperContainerRef.current &&
+        !stepperContainerRef.current.contains(e.target as Node)
+      ) {
+        setExpandedStepper(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [step, expandedStepper]);
 
   function handleClose() {
     setStep("vendor");
     setSelectedVendor(null);
     setDraftLineItems([]);
     setSearchModalOpen(false);
-    setSelectedRecentIds(new Set());
-    setSelectedPriceChangeIds(new Set());
+    setSearchQuery("");
+    setCategoryFilter("all");
+    setRecentQuantities({});
+    setPriceChangeQuantities({});
     setSearchAddedItems([]);
+    setExpandedStepper(null);
     onClose();
   }
 
   function handleSelectVendor(vendor: CreateOrderVendor) {
     setSelectedVendor(vendor);
     setDraftLineItems([]);
-    setSelectedRecentIds(new Set());
-    setSelectedPriceChangeIds(new Set());
+    setRecentQuantities({});
+    setPriceChangeQuantities({});
     setSearchAddedItems([]);
+    setExpandedStepper(null);
     setStep("products");
   }
 
   function handleBackToProducts() {
     setDraftLineItems([]);
-    setSelectedRecentIds(new Set());
-    setSelectedPriceChangeIds(new Set());
+    setRecentQuantities({});
+    setPriceChangeQuantities({});
     setSearchAddedItems([]);
+    setExpandedStepper(null);
     setStep("products");
   }
 
@@ -94,44 +119,72 @@ export function CreateOrderModal({
     setSearchModalOpen(false);
   }
 
-  function toggleRecent(i: number) {
-    setSelectedRecentIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(i)) next.delete(i);
-      else next.add(i);
+  function setRecentQuantity(index: number, quantity: number) {
+    setRecentQuantities((prev) => {
+      const next = { ...prev };
+      if (quantity <= 0) delete next[index];
+      else next[index] = quantity;
       return next;
     });
   }
 
-  function togglePriceChange(id: string) {
-    setSelectedPriceChangeIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+  function setPriceChangeQuantity(id: string, quantity: number) {
+    setPriceChangeQuantities((prev) => {
+      const next = { ...prev };
+      if (quantity <= 0) delete next[id];
+      else next[id] = quantity;
       return next;
     });
   }
 
   function handleReviewOrder() {
-    const fromRecent = recentProducts
-      .filter((_, i) => selectedRecentIds.has(i))
-      .map((p) => toLineItem(p, 1));
-    const fromPriceChange = priceChanges
-      .filter((p) => selectedPriceChangeIds.has(p.id))
-      .map((p) => toLineItem(p, 1));
+    const fromRecent = recentProducts.flatMap((p, i) => {
+      const qty = recentQuantities[i] ?? 0;
+      return qty > 0 ? [toLineItem(p, qty)] : [];
+    });
+    const fromPriceChange = priceChanges.flatMap((p) => {
+      const qty = priceChangeQuantities[p.id] ?? 0;
+      return qty > 0 ? [toLineItem(p, qty)] : [];
+    });
     setDraftLineItems([...fromRecent, ...fromPriceChange, ...searchAddedItems]);
     setStep("preview");
   }
 
   const recentProducts = selectedVendor ? RECENT_PRODUCTS_BY_VENDOR[selectedVendor.id] ?? [] : [];
   const priceChanges = selectedVendor ? PRICE_CHANGES_BY_VENDOR[selectedVendor.id] ?? [] : [];
+  const q = searchQuery.trim().toLowerCase();
+  const filteredPriceChanges =
+    q === ""
+      ? priceChanges
+      : priceChanges.filter((p) => p.productName.toLowerCase().includes(q));
+  const filteredRecentIndices =
+    q === ""
+      ? recentProducts.map((_, i) => i)
+      : recentProducts
+          .map((_, i) => i)
+          .filter((i) => recentProducts[i].productName.toLowerCase().includes(q));
   const productsStepItemCount =
-    selectedRecentIds.size + selectedPriceChangeIds.size + searchAddedItems.length;
+    Object.values(recentQuantities).reduce((a, b) => a + b, 0) +
+    Object.values(priceChangeQuantities).reduce((a, b) => a + b, 0) +
+    searchAddedItems.length;
   const total = draftLineItems.reduce((sum, line) => sum + line.lineTotal, 0);
+
+  /** Subtotal for the products step (current cart), and line count for "X products" */
+  const productsStepSubtotal =
+    recentProducts.reduce((sum, p, i) => sum + (recentQuantities[i] ?? 0) * p.unitPrice, 0) +
+    priceChanges.reduce((sum, p) => sum + (priceChangeQuantities[p.id] ?? 0) * p.unitPrice, 0) +
+    searchAddedItems.reduce((s, line) => s + line.lineTotal, 0);
+  const productsStepLineCount =
+    Object.values(recentQuantities).filter((q) => (q ?? 0) > 0).length +
+    Object.keys(priceChangeQuantities).filter((id) => (priceChangeQuantities[id] ?? 0) > 0).length +
+    searchAddedItems.length;
+  const minimumOrder = selectedVendor?.minimumOrder ?? 0;
+  const percentToMinimum =
+    minimumOrder > 0 ? Math.min(100, Math.round((productsStepSubtotal / minimumOrder) * 100)) : 100;
 
   return (
     <>
-      <Modal open={open} onClose={handleClose} variant="fullPage" aria-label="Create order">
+      <Modal open={open} onClose={handleClose} variant="fullPage" aria-label="Create order" zIndex={9999}>
         <div className={styles.wrapper}>
           {/* Step 1: Vendor selection (Figma) */}
           {step === "vendor" && (
@@ -202,12 +255,43 @@ export function CreateOrderModal({
               </header>
               <div className={styles.contentScroll}>
                 <div className={styles.productsContent}>
-                  <div className={styles.vendorLogoWrap}>
-                    <img
-                      src={selectedVendor.logoPath}
-                      alt=""
-                      className={styles.vendorLogoInContent}
-                    />
+                  <div className={styles.productsToolbar}>
+                    <div className={styles.vendorLogoRowWrap}>
+                      <img
+                        src={selectedVendor.logoPath}
+                        alt=""
+                        className={styles.vendorLogoRow}
+                      />
+                    </div>
+                    <div className={styles.searchFilterRow} role="search">
+                      <div className={styles.searchFieldWrap}>
+                        <img src={SEARCH_ICON_SRC} alt="" className={styles.searchIcon} aria-hidden />
+                        <input
+                          type="search"
+                          className={styles.searchInput}
+                          placeholder="Search"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          aria-label="Search products"
+                        />
+                      </div>
+                      <div className={styles.filterButton}>
+                        <span className={styles.filterButtonVisual} aria-hidden>
+                          <span className={styles.filterButtonLabel}>Item type</span>{" "}
+                          <span className={styles.filterButtonValue}>
+                            {categoryFilter === "all" ? "All" : categoryFilter}
+                          </span>
+                        </span>
+                        <select
+                          value={categoryFilter}
+                          onChange={(e) => setCategoryFilter(e.target.value)}
+                          className={styles.filterButtonSelect}
+                          aria-label="Item type filter"
+                        >
+                          <option value="all">All</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
 
                   <section>
@@ -218,18 +302,15 @@ export function CreateOrderModal({
                       </button>
                     </div>
                     <ul className={styles.productList}>
-                      {priceChanges.length === 0 ? (
-                        <li className={styles.draftSummary}>No price changes for this vendor.</li>
+                      {filteredPriceChanges.length === 0 ? (
+                        <li className={styles.draftSummary}>
+                          {priceChanges.length === 0
+                            ? "No price changes for this vendor."
+                            : "No price changes match your search."}
+                        </li>
                       ) : (
-                        priceChanges.map((p) => (
+                        filteredPriceChanges.map((p) => (
                           <li key={p.id} className={styles.productRow}>
-                            <Checkbox
-                              id={`price-${p.id}`}
-                              checked={selectedPriceChangeIds.has(p.id)}
-                              onChange={() => togglePriceChange(p.id)}
-                              className={styles.productRowCheckbox}
-                              aria-label={`Select ${p.productName}`}
-                            />
                             {p.imageUrl ? (
                               <img src={p.imageUrl} alt="" className={styles.productRowImg} />
                             ) : (
@@ -245,6 +326,52 @@ export function CreateOrderModal({
                                 {p.changePercent}% {p.isIncrease ? "increase" : "decrease"}
                               </span>
                             </div>
+                            {(priceChangeQuantities[p.id] ?? 0) === 0 ? (
+                              <button
+                                type="button"
+                                className={styles.productRowPlusButton}
+                                onClick={() => setPriceChangeQuantity(p.id, 1)}
+                                aria-label={`Add ${p.productName} to order`}
+                              >
+                                +
+                              </button>
+                            ) : expandedStepper === `price-${p.id}` ? (
+                              <div
+                                ref={stepperContainerRef}
+                                className={styles.stepper}
+                                role="group"
+                                aria-label={`Quantity for ${p.productName}`}
+                              >
+                                <button
+                                  type="button"
+                                  className={styles.stepperBtn}
+                                  onClick={() => setPriceChangeQuantity(p.id, (priceChangeQuantities[p.id] ?? 1) - 1)}
+                                  aria-label="Decrease quantity"
+                                >
+                                  −
+                                </button>
+                                <span className={styles.stepperValue}>{priceChangeQuantities[p.id] ?? 1}</span>
+                                <button
+                                  type="button"
+                                  className={styles.stepperBtn}
+                                  onClick={() => setPriceChangeQuantity(p.id, (priceChangeQuantities[p.id] ?? 0) + 1)}
+                                  aria-label="Increase quantity"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                className={styles.productRowPlusButton}
+                                onClick={() => setExpandedStepper(`price-${p.id}`)}
+                                aria-label={`${p.productName} quantity: ${priceChangeQuantities[p.id] ?? 1}, click to change`}
+                              >
+                                <span className={styles.productRowPlusButtonQuantity}>
+                                  {priceChangeQuantities[p.id] ?? 1}
+                                </span>
+                              </button>
+                            )}
                           </li>
                         ))
                       )}
@@ -259,23 +386,21 @@ export function CreateOrderModal({
                       </button>
                     </div>
                     <ul className={styles.productList}>
-                      {recentProducts.length === 0 ? (
-                        <li className={styles.draftSummary}>No regulars for this vendor.</li>
+                      {filteredRecentIndices.length === 0 ? (
+                        <li className={styles.draftSummary}>
+                          {recentProducts.length === 0
+                            ? "No regulars for this vendor."
+                            : "No regulars match your search."}
+                        </li>
                       ) : (
-                        recentProducts.map((p, i) => {
+                        filteredRecentIndices.map((origIndex) => {
+                          const p = recentProducts[origIndex];
                           const priceDisp = p.priceDisplay ?? `${formatCurrency(p.unitPrice)}/${p.unit}`;
                           const packerLine = p.packerId ? `Packer | ${p.packerId}` : "Regular";
                           const changePercent = p.changePercent ?? 0;
                           const isIncrease = p.isIncrease ?? false;
                           return (
-                            <li key={i} className={styles.productRow}>
-                              <Checkbox
-                                id={`recent-${i}`}
-                                checked={selectedRecentIds.has(i)}
-                                onChange={() => toggleRecent(i)}
-                                className={styles.productRowCheckbox}
-                                aria-label={`Select ${p.productName}`}
-                              />
+                            <li key={origIndex} className={styles.productRow}>
                               {p.imageUrl ? (
                                 <img src={p.imageUrl} alt="" className={styles.productRowImg} />
                               ) : (
@@ -287,10 +412,56 @@ export function CreateOrderModal({
                               </div>
                               <div className={styles.productRowPriceBlock}>
                                 <span className={styles.productRowPrice}>{priceDisp}</span>
-                                <span className={isIncrease ? styles.productRowUp : styles.productRowDown}>
+                                <span className={styles.productRowChangeMuted}>
                                   {changePercent}% {isIncrease ? "increase" : "decrease"}
                                 </span>
                               </div>
+                              {(recentQuantities[origIndex] ?? 0) === 0 ? (
+                                <button
+                                  type="button"
+                                  className={styles.productRowPlusButton}
+                                  onClick={() => setRecentQuantity(origIndex, 1)}
+                                  aria-label={`Add ${p.productName} to order`}
+                                >
+                                  +
+                                </button>
+                              ) : expandedStepper === `recent-${origIndex}` ? (
+                                <div
+                                  ref={stepperContainerRef}
+                                  className={styles.stepper}
+                                  role="group"
+                                  aria-label={`Quantity for ${p.productName}`}
+                                >
+                                  <button
+                                    type="button"
+                                    className={styles.stepperBtn}
+                                    onClick={() => setRecentQuantity(origIndex, (recentQuantities[origIndex] ?? 1) - 1)}
+                                    aria-label="Decrease quantity"
+                                  >
+                                    −
+                                  </button>
+                                  <span className={styles.stepperValue}>{recentQuantities[origIndex] ?? 1}</span>
+                                  <button
+                                    type="button"
+                                    className={styles.stepperBtn}
+                                    onClick={() => setRecentQuantity(origIndex, (recentQuantities[origIndex] ?? 0) + 1)}
+                                    aria-label="Increase quantity"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className={styles.productRowPlusButton}
+                                  onClick={() => setExpandedStepper(`recent-${origIndex}`)}
+                                  aria-label={`${p.productName} quantity: ${recentQuantities[origIndex] ?? 1}, click to change`}
+                                >
+                                  <span className={styles.productRowPlusButtonQuantity}>
+                                    {recentQuantities[origIndex] ?? 1}
+                                  </span>
+                                </button>
+                              )}
                             </li>
                           );
                         })
@@ -298,21 +469,47 @@ export function CreateOrderModal({
                     </ul>
                   </section>
 
-                  <button
-                    type="button"
-                    className={styles.searchLink}
-                    onClick={() => setSearchModalOpen(true)}
-                  >
-                    Search all products
-                  </button>
-
-                  {productsStepItemCount > 0 && (
-                    <p className={styles.draftSummary}>
-                      {productsStepItemCount} item{productsStepItemCount !== 1 ? "s" : ""} in order
-                    </p>
-                  )}
+                  <div className={styles.searchAllCard}>
+                    <img
+                      src={FORK_KNIFE_ICON_SRC}
+                      alt=""
+                      className={styles.searchAllCardIcon}
+                      aria-hidden
+                    />
+                    <div className={styles.searchAllCardCopy}>
+                      <h3 className={styles.searchAllCardHeading}>Looking for something new?</h3>
+                      <p className={styles.searchAllCardText}>
+                        Search the {selectedVendor.name} catalog for 1000+ products.
+                      </p>
+                    </div>
+                    <Button
+                      variant="secondary"
+                      onClick={() => setSearchModalOpen(true)}
+                      className={styles.searchAllCardButton}
+                    >
+                      Search all products
+                    </Button>
+                  </div>
                 </div>
               </div>
+
+              <footer className={styles.bottomBar} aria-live="polite">
+                <div className={styles.bottomBarInner}>
+                  <span className={styles.bottomBarProducts}>
+                    {productsStepLineCount} product{productsStepLineCount !== 1 ? "s" : ""}
+                  </span>
+                  <div className={styles.bottomBarRight}>
+                    <span className={styles.bottomBarSubtotal}>
+                      Subtotal: {formatCurrency(productsStepSubtotal)}
+                    </span>
+                    <span className={styles.bottomBarMinimum}>
+                      {percentToMinimum >= 100
+                        ? "Minimum met"
+                        : `${percentToMinimum}% to minimum`}
+                    </span>
+                  </div>
+                </div>
+              </footer>
             </>
           )}
 

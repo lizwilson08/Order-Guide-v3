@@ -79,16 +79,16 @@ function AppLayout() {
         </div>
       </aside>
       <div className={styles.content}>
-        <Routes>
-          <Route path="/" element={<OrderGuideHome />} />
-          <Route path="/ingredients/:id" element={<IngredientComparison />} />
-          <Route path="/shopping-lists" element={<ShoppingLists />} />
-          <Route path="/shopping-lists/:id" element={<ShoppingListDetail />} />
-          <Route path="/purchase-orders" element={<PurchaseOrderList />} />
-          <Route path="/purchase-orders/:id" element={<PurchaseOrderDetail />} />
-          <Route path="/design-system" element={<DesignSystemShowcase />} />
-        </Routes>
-      </div>
+          <Routes>
+            <Route path="/" element={<OrderGuideHome />} />
+            <Route path="/ingredients/:id" element={<IngredientComparison />} />
+            <Route path="/shopping-lists" element={<ShoppingLists />} />
+            <Route path="/shopping-lists/:id" element={<ShoppingListDetail />} />
+            <Route path="/purchase-orders" element={<PurchaseOrderList />} />
+            <Route path="/purchase-orders/:id" element={<PurchaseOrderDetail />} />
+            <Route path="/design-system" element={<DesignSystemShowcase />} />
+          </Routes>
+        </div>
     </div>
   );
 }

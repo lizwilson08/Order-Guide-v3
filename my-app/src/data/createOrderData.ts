@@ -3,17 +3,22 @@ export interface CreateOrderVendor {
   id: string;
   name: string;
   logoPath: string;
+  /** Minimum order amount in USD; used for "X% to minimum" in the products step bar */
+  minimumOrder?: number;
 }
 
+/** Bump when logo assets in public/images/logos are updated so browsers load the latest */
+const LOGO_VERSION = "4";
+
 export const VENDORS_CREATE_ORDER: CreateOrderVendor[] = [
-  { id: "sysco", name: "Sysco", logoPath: "/images/logos/sysco.png" },
-  { id: "odeko", name: "Odeko", logoPath: "/images/logos/odeko.png" },
-  { id: "baldor", name: "Baldor", logoPath: "/images/logos/baldor.png" },
-  { id: "challenge", name: "Challenge", logoPath: "/images/logos/challenge.png" },
-  { id: "meat-market", name: "Meat Market", logoPath: "/images/logos/meat-market.png" },
-  { id: "saladinos", name: "Saladinos", logoPath: "/images/logos/saladinos.png" },
-  { id: "farmer-bros", name: "Farmer Brothers", logoPath: "/images/logos/farmer-bros.png" },
-  { id: "costco", name: "Costco", logoPath: "/images/logos/costco.png" },
+  { id: "sysco", name: "Sysco", logoPath: `/images/logos/sysco.png?v=${LOGO_VERSION}`, minimumOrder: 350 },
+  { id: "odeko", name: "Odeko", logoPath: `/images/logos/odeko.png?v=${LOGO_VERSION}`, minimumOrder: 75 },
+  { id: "baldor", name: "Baldor", logoPath: `/images/logos/baldor.png?v=${LOGO_VERSION}`, minimumOrder: 250 },
+  { id: "challenge", name: "Challenge", logoPath: `/images/logos/challenge.png?v=${LOGO_VERSION}`, minimumOrder: 100 },
+  { id: "meat-market", name: "Meat Market", logoPath: `/images/logos/meat-market.png?v=${LOGO_VERSION}`, minimumOrder: 150 },
+  { id: "saladinos", name: "Saladinos", logoPath: `/images/logos/saladinos.png?v=${LOGO_VERSION}`, minimumOrder: 200 },
+  { id: "farmer-bros", name: "Farmer Brothers", logoPath: `/images/logos/farmer-bros.png?v=${LOGO_VERSION}`, minimumOrder: 50 },
+  { id: "costco", name: "Costco", logoPath: `/images/logos/costco.png?v=${LOGO_VERSION}`, minimumOrder: 250 },
 ];
 
 /** Minimal product row for "recently ordered" and catalog. Optional fields for row display (Figma: image, packer, price change). */
