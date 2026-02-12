@@ -6,7 +6,8 @@ import type { ProductRow } from "../components/ProductComparisonGroup";
 import { ProductComparisonGroup } from "../components/ProductComparisonGroup";
 import { Button, Select, Heading, Input, Loading, Badge, Table, EditFavoritesModal, EditGroupModal, OrderDetailModal, CreateOrderModal } from "../components";
 import type { FavoriteGroupItem } from "../components";
-import type { OrderDetail } from "../components";
+import type { OrderDetail, OrderLineItem } from "../components";
+import type { CreateOrderVendor } from "../data/createOrderData";
 import type { Column } from "../components/Table/Table";
 import styles from "./OrderGuideHome.module.css";
 
@@ -338,6 +339,10 @@ export function OrderGuideHome() {
   const [editedGroups, setEditedGroups] = useState<Record<string, { ingredientName: string; products: ProductRow[] }>>({});
   const [selectedOrderId, setSelectedOrderId] = useState<string | number | null>(null);
   const [createOrderModalOpen, setCreateOrderModalOpen] = useState(false);
+  const [activeOrders, setActiveOrders] = useState<ActiveOrderRow[]>(ACTIVE_ORDERS_DUMMY);
+  const [savedDraftOrderDetails, setSavedDraftOrderDetails] = useState<Record<string, OrderDetail>>({});
+  const [editingOrder, setEditingOrder] = useState<OrderDetail | null>(null);
+  const nextDraftOrderIdRef = useRef(108);
 
   useEffect(() => {
     api.ingredients
@@ -452,7 +457,66 @@ export function OrderGuideHome() {
 
   const editingGroup = editingGroupId ? allGroups.find((g) => g.id === editingGroupId) ?? null : null;
 
-  const orderDetail = selectedOrderId != null ? ORDER_DETAILS_DUMMY[String(selectedOrderId)] ?? null : null;
+  const orderDetail =
+    selectedOrderId != null
+      ? ORDER_DETAILS_DUMMY[String(selectedOrderId)] ?? savedDraftOrderDetails[String(selectedOrderId)] ?? null
+      : null;
+
+  function addOrderToList(vendor: CreateOrderVendor, items: OrderLineItem[], status: "Draft" | "Pending") {
+    const orderId = nextDraftOrderIdRef.current++;
+    const total = items.reduce((sum, item) => sum + item.lineTotal, 0);
+    const detail: OrderDetail = {
+      orderId,
+      vendorName: vendor.name,
+      status,
+      total,
+      lineItems: items,
+    };
+    setSavedDraftOrderDetails((prev) => ({ ...prev, [String(orderId)]: detail }));
+    const row: ActiveOrderRow = {
+      id: String(orderId),
+      vendorName: vendor.name,
+      productCount: items.length,
+      total,
+      status: status === "Draft" ? "draft" : "pending",
+    };
+    setActiveOrders((prev) => [row, ...prev]);
+  }
+
+  function updateOrder(orderId: string | number, vendor: CreateOrderVendor, items: OrderLineItem[], status: "Draft" | "Pending") {
+    const total = items.reduce((sum, item) => sum + item.lineTotal, 0);
+    const detail: OrderDetail = {
+      orderId,
+      vendorName: vendor.name,
+      status,
+      total,
+      lineItems: items,
+    };
+    setSavedDraftOrderDetails((prev) => ({ ...prev, [String(orderId)]: detail }));
+    setActiveOrders((prev) =>
+      prev.map((row) =>
+        row.id === String(orderId)
+          ? { ...row, vendorName: vendor.name, productCount: items.length, total, status: status === "Draft" ? "draft" : "pending" }
+          : row
+      )
+    );
+  }
+
+  function handleSaveDraft(vendor: CreateOrderVendor, items: OrderLineItem[], existingOrderId?: string | number) {
+    if (existingOrderId != null) {
+      updateOrder(existingOrderId, vendor, items, "Draft");
+    } else {
+      addOrderToList(vendor, items, "Draft");
+    }
+  }
+
+  function handleSend(vendor: CreateOrderVendor, items: OrderLineItem[], existingOrderId?: string | number) {
+    if (existingOrderId != null) {
+      updateOrder(existingOrderId, vendor, items, "Pending");
+    } else {
+      addOrderToList(vendor, items, "Pending");
+    }
+  }
 
   function handleSaveEditGroup(payload: {
     id: string;
@@ -786,17 +850,28 @@ export function OrderGuideHome() {
         open={!!selectedOrderId}
         onClose={() => setSelectedOrderId(null)}
         order={orderDetail}
-        onEdit={() => {
-          setSelectedOrderId(null);
-          setCreateOrderModalOpen(true);
-        }}
+        onEdit={
+          orderDetail?.status.toLowerCase() === "draft"
+            ? () => {
+                setEditingOrder(orderDetail);
+                setSelectedOrderId(null);
+                setCreateOrderModalOpen(true);
+              }
+            : undefined
+        }
       />
 
       {createOrderModalOpen &&
         createPortal(
           <CreateOrderModal
             open={true}
-            onClose={() => setCreateOrderModalOpen(false)}
+            onClose={() => {
+              setCreateOrderModalOpen(false);
+              setEditingOrder(null);
+            }}
+            editOrder={editingOrder}
+            onSaveDraft={handleSaveDraft}
+            onSend={handleSend}
           />,
           document.body
         )}
@@ -807,7 +882,7 @@ export function OrderGuideHome() {
             <section className={styles.ordersCard}>
               <h3 className={styles.ordersCardTitle}>Active orders</h3>
               <ul className={styles.activeOrdersList}>
-                {ACTIVE_ORDERS_DUMMY.map((row) => (
+                {activeOrders.map((row) => (
                   <li key={row.id}>
                     <button
                       type="button"

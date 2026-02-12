@@ -5,9 +5,12 @@
   min-height: 0;
 }
 
-/* Shared header (vendor + products + preview) */
+/* Shared header (vendor + products + preview) – max-width aligns with content below */
 .header {
   width: 100%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -69,7 +72,7 @@
 
 .vendorContent {
   padding: 32px 24px;
-  max-width: 800px;
+  max-width: 1000px;
   width: 100%;
   margin: 0 auto;
   display: flex;
@@ -129,7 +132,7 @@
 /* Step 2: Products – sections (Figma: vendor logo, Top price changes, Regulars) */
 .productsContent {
   padding: 32px 24px;
-  max-width: 800px;
+  max-width: 1000px;
   width: 100%;
   margin: 0 auto;
   display: flex;
@@ -166,8 +169,8 @@
 }
 
 .searchFieldWrap {
-  flex: 1;
-  min-width: 0;
+  width: 300px;
+  flex: 0 0 300px;
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -321,7 +324,81 @@
   object-fit: contain;
 }
 
-/* Product tables (Top price changes, Regulars) */
+/* Top price changes – card grid (Figma 4188-29197) */
+.priceChangeCardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.priceChangeCard {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.priceChangeCardInner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.priceChangeCardImg {
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  background: var(--color-neutral-100);
+}
+
+.priceChangeCardImgPlaceholder {
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  border-radius: var(--radius-lg);
+  background: var(--color-neutral-100);
+}
+
+.priceChangeCardBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.priceChangeCardName {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1.35;
+}
+
+.priceChangeCardMeta {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-xs);
+  color: var(--color-text-muted);
+}
+
+.priceChangeCardPriceLine {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);
+}
+
+/* Product tables (Regulars, Edit order Add to order) */
 .productTableWrap {
   width: 100%;
   overflow-x: auto;
@@ -369,7 +446,8 @@
 }
 
 .productTableColDate,
-.productTableColCost {
+.productTableColCost,
+.productTableColTotal {
   padding-left: var(--space-4);
   padding-right: var(--space-4);
 }
@@ -384,6 +462,17 @@
   white-space: nowrap;
   width: 1%;
   min-width: 100px;
+}
+
+.productTableColTotal {
+  white-space: nowrap;
+  width: 1%;
+  min-width: 110px;
+  text-align: right;
+}
+
+.productTable th.productTableColTotal {
+  text-align: right;
 }
 
 .productTableColAction {
@@ -515,6 +604,32 @@
 .productRowPlusButtonQuantity {
   font-size: var(--font-size-body-sm);
   font-weight: var(--font-weight-medium);
+}
+
+.productRowRemoveButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.productRowRemoveButton:hover {
+  color: var(--color-text-primary);
+}
+
+.productRowRemoveButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-muted);
+}
+
+.productRowRemoveIcon {
+  width: 20px;
+  height: 20px;
+  display: block;
 }
 
 /* Quantity stepper (pill with −/value/+) */
@@ -705,7 +820,7 @@
 }
 
 .bottomBarInner {
-  max-width: 800px;
+  max-width: 1000px;
   width: 100%;
   margin: 0 auto;
   display: flex;
