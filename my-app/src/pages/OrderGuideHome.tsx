@@ -182,6 +182,7 @@ const AVG_ORDER_SIZE_DUMMY: AvgOrderSizeStat[] = [
   { supplierName: "Sysco", value: "$789.21", percentChange: 2.4, isIncrease: false },
   { supplierName: "Farmer Brothers", value: "$245.43", percentChange: 4.5, isIncrease: true },
   { supplierName: "Meat Market", value: "$431.89", percentChange: 6.8, isIncrease: false },
+  { supplierName: "US Foods", value: "$512.00", percentChange: 1.2, isIncrease: true },
 ];
 
 /** Price change row for Orders tab */
@@ -200,7 +201,7 @@ const PRICE_CHANGES_DUMMY: PriceChangeRow[] = [
   { id: "3", productName: "Shell Eggs, Large, Grade A, 15-dozen case", packerId: "4451234", priceDisplay: "$42.00/cs", changePercent: 4.6, isIncrease: true, imageUrl: "/images/ingredients/Eggs-brown.png" },
 ];
 
-/** Past order row for Orders tab table */
+/** Order row for Orders tab table (all orders: active + past) */
 interface PastOrderRow {
   id: number;
   orderId: number;
@@ -217,9 +218,36 @@ const PAST_ORDERS_DUMMY: PastOrderRow[] = [
   { id: 100, orderId: 100, status: "Completed", vendor: "Fishmonger", productCount: 2, total: "$320.00" },
 ];
 
+function formatOrderTotal(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(value);
+}
+
+function orderStatusVariant(status: string): "default" | "primary" | "success" | "warning" | "error" {
+  switch (status.toLowerCase()) {
+    case "pending":
+      return "warning";
+    case "draft":
+      return "default";
+    case "completed":
+      return "success";
+    case "cancelled":
+      return "error";
+    default:
+      return "default";
+  }
+}
+
 const PAST_ORDERS_COLUMNS: Column<PastOrderRow>[] = [
   { key: "orderId", header: "Order" },
-  { key: "status", header: "Status" },
+  {
+    key: "status",
+    header: "Status",
+    render: (row) => <Badge variant={orderStatusVariant(row.status)}>{row.status}</Badge>,
+  },
   { key: "vendor", header: "Vendor" },
   { key: "productCount", header: "Products" },
   { key: "total", header: "Total" },
@@ -480,6 +508,19 @@ export function OrderGuideHome() {
     selectedOrderId != null
       ? ORDER_DETAILS_DUMMY[String(selectedOrderId)] ?? savedDraftOrderDetails[String(selectedOrderId)] ?? null
       : null;
+
+  /** All orders for the table: active (draft/pending) first, then past */
+  const allOrdersTableRows = useMemo((): PastOrderRow[] => {
+    const activeRows: PastOrderRow[] = activeOrders.map((row) => ({
+      id: Number(row.id),
+      orderId: Number(row.id),
+      status: row.status === "pending" ? "Pending" : "Draft",
+      vendor: row.vendorName,
+      productCount: row.productCount,
+      total: formatOrderTotal(row.total),
+    }));
+    return [...activeRows, ...PAST_ORDERS_DUMMY];
+  }, [activeOrders]);
 
   function addOrderToList(vendor: CreateOrderVendor, items: OrderLineItem[], status: "Draft" | "Pending") {
     const orderId = nextDraftOrderIdRef.current++;
@@ -900,64 +941,31 @@ export function OrderGuideHome() {
       {activeTab === "orders" && (
         <main className={styles.main}>
           <div className={styles.ordersTopRow}>
-            <section className={styles.ordersCard}>
-              <h3 className={styles.ordersCardTitle}>Active orders</h3>
-              <ul className={styles.activeOrdersList}>
-                {activeOrders.map((row) => (
-                  <li key={row.id}>
-                    <button
-                      type="button"
-                      className={styles.activeOrderLink}
-                      onClick={() => setSelectedOrderId(row.id)}
-                    >
-                      <div className={styles.activeOrderMain}>
-                        <span className={styles.activeOrderVendor}>{row.vendorName}</span>
-                        <span className={styles.activeOrderMeta}>
-                          {row.productCount} products | ${row.total.toFixed(2)}
-                        </span>
-                      </div>
-                      <div className={styles.activeOrderRight}>
-                        <Badge variant={row.status === "pending" ? "warning" : "default"}>
-                          {row.status === "pending" ? "Pending" : "Draft"}
-                        </Badge>
-                      </div>
-                    </button>
-                  </li>
+            <section className={styles.avgOrderSizeSection}>
+              <h3 className={styles.avgOrderSizeTitle}>Average order size</h3>
+              <div className={styles.avgOrderSizeCardsRow}>
+                {AVG_ORDER_SIZE_DUMMY.map((stat, i) => (
+                  <div key={i} className={styles.avgOrderSizeStatCard}>
+                    <span className={styles.avgOrderSizeStatLabel}>{stat.supplierName}</span>
+                    <span className={styles.avgOrderSizeStatValue}>{stat.value}</span>
+                    <span className={styles.avgOrderSizeStatPercent}>
+                      {stat.isIncrease ? "↑" : "↓"} {stat.percentChange}% last 30 days
+                    </span>
+                  </div>
                 ))}
-              </ul>
-            </section>
-            <section className={`${styles.statsCard} ${styles.statsCardPotentialSavings}`}>
-              <div className={styles.statsCardHeader}>
-                <h3 className={styles.statsCardTitle}>Avg order size</h3>
-                <button type="button" className={styles.cardMoreButton} aria-label="More options">
-                  <img src={MORE_ICON_SRC} alt="" className={styles.cardMoreIcon} />
-                </button>
-              </div>
-              <div className={styles.potentialSavingsStatsWrap}>
-                <div className={styles.potentialSavingsStats}>
-                  {AVG_ORDER_SIZE_DUMMY.map((stat, i) => (
-                    <div key={i} className={styles.potentialSavingsStat}>
-                      <span className={styles.potentialSavingsLabel}>{stat.supplierName}</span>
-                      <span className={styles.potentialSavingsValue}>{stat.value}</span>
-                      <span className={styles.avgOrderSizePercent}>
-                        {stat.isIncrease ? "↑" : "↓"} {stat.percentChange}% last 30 days
-                      </span>
-                    </div>
-                  ))}
-                </div>
               </div>
             </section>
           </div>
-          <section className={styles.section}>
+          <section className={styles.ordersTableSection}>
+            <h3 className={styles.ordersSectionTitle}>Orders</h3>
             <div className={styles.ordersCard}>
-              <h3 className={styles.ordersCardTitle}>Past orders</h3>
               <div className={styles.pastOrdersTableWrap}>
                 <Table<PastOrderRow>
-                columns={PAST_ORDERS_COLUMNS}
-                data={PAST_ORDERS_DUMMY}
-                keyExtractor={(row) => row.id}
-                onRowClick={(row) => setSelectedOrderId(row.orderId)}
-              />
+                  columns={PAST_ORDERS_COLUMNS}
+                  data={allOrdersTableRows}
+                  keyExtractor={(row) => row.id}
+                  onRowClick={(row) => setSelectedOrderId(row.orderId)}
+                />
               </div>
             </div>
           </section>

@@ -93,7 +93,7 @@
 .tabs {
   display: flex;
   gap: var(--space-6);
-  margin-bottom: var(--space-4);
+  margin-bottom: 32px;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -140,7 +140,7 @@
 .statsCard {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: var(--space-4);
   display: flex;
   flex-direction: column;
@@ -492,8 +492,79 @@
 .ordersCard {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: var(--space-4);
+}
+
+/* Average order size: heading outside, each stat in its own card – span full width */
+.avgOrderSizeSection {
+  width: 100%;
+  grid-column: 1 / -1;
+}
+
+.avgOrderSizeTitle {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4);
+}
+
+.avgOrderSizeCardsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.avgOrderSizeStatCard {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.avgOrderSizeStatLabel {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.avgOrderSizeStatValue {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+}
+
+.avgOrderSizeStatPercent {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: var(--font-weight-normal);
+  color: var(--color-success);
+  margin-top: 0;
+}
+
+/* Orders table section: heading outside card, 32px below average order size */
+.ordersTableSection {
+  margin-top: 32px;
+}
+
+.ordersSectionTitle {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4);
 }
 
 .ordersTopRow .ordersCard:first-child {
