@@ -226,7 +226,7 @@ const PAST_ORDERS_COLUMNS: Column<PastOrderRow>[] = [
   {
     key: "actions",
     header: "",
-    render: (row) => (
+    render: (_row) => (
       <button
         type="button"
         className={styles.pastOrderRowActionButton}
