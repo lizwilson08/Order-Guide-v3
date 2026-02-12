@@ -508,6 +508,7 @@ export function OrderGuideHome() {
     } else {
       addOrderToList(vendor, items, "Draft");
     }
+    setActiveTab("orders");
   }
 
   function handleSend(vendor: CreateOrderVendor, items: OrderLineItem[], existingOrderId?: string | number) {
@@ -516,6 +517,7 @@ export function OrderGuideHome() {
     } else {
       addOrderToList(vendor, items, "Pending");
     }
+    setActiveTab("orders");
   }
 
   function handleSaveEditGroup(payload: {

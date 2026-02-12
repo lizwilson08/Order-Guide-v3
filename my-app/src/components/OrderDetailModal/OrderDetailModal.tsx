@@ -48,28 +48,30 @@ export function OrderDetailModal({ open, onClose, order, onEdit }: OrderDetailMo
     <Modal open={open} onClose={onClose} variant="fullPage" aria-label="Order details">
       <div className={styles.wrapper} data-order-modal="full-page-v2">
         <header className={styles.header}>
-          <Button
-            type="button"
-            variant="secondary"
-            shape="circle"
-            onClick={onClose}
-            aria-label="Close"
-            className={styles.closeButton}
-          >
-            <img src={CLOSE_ICON_SRC} alt="" className={styles.closeIcon} />
-          </Button>
-          <Heading as="h1" className={styles.title}>
-            {orderIdDisplay}
-          </Heading>
-          <div style={{ display: "flex", gap: "var(--space-2)" }}>
-            {isDraft && onEdit && order && (
-              <Button variant="secondary" onClick={() => onEdit(order)}>
-                Edit
-              </Button>
-            )}
-            <Button variant="secondary" onClick={() => {}}>
-              Send
+          <div className={styles.headerInner}>
+            <Button
+              type="button"
+              variant="secondary"
+              shape="circle"
+              onClick={onClose}
+              aria-label="Close"
+              className={styles.closeButton}
+            >
+              <img src={CLOSE_ICON_SRC} alt="" className={styles.closeIcon} />
             </Button>
+            <Heading as="h1" className={styles.title}>
+              {orderIdDisplay}
+            </Heading>
+            <div style={{ display: "flex", gap: "var(--space-2)" }}>
+              {isDraft && onEdit && order && (
+                <Button variant="secondary" onClick={() => onEdit(order)}>
+                  Edit
+                </Button>
+              )}
+              <Button variant="secondary" onClick={() => {}}>
+                Send
+              </Button>
+            </div>
           </div>
         </header>
 

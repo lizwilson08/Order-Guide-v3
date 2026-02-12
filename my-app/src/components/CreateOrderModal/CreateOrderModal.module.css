@@ -299,7 +299,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-2);
+  margin-bottom: 16px;
 }
 
 .sectionTitle {
@@ -352,7 +352,10 @@
   border-radius: var(--radius-xl);
   overflow: hidden;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+  padding-right: var(--space-3);
 }
 
 .priceChangeCardInner {
@@ -395,6 +398,11 @@
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   line-height: 1.35;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
 
 .priceChangeCardMeta {
@@ -417,6 +425,14 @@
   border: 1px solid var(--color-border);
   border-radius: 12px;
   background-color: var(--color-surface);
+}
+
+.orderItemsTableWrap {
+  box-shadow: none;
+}
+
+.orderItemsTableWrap table {
+  box-shadow: none;
 }
 
 .productTable {
@@ -491,6 +507,43 @@
   width: 1%;
   white-space: nowrap;
   text-align: center;
+}
+
+.quantityInput {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.quantityInput::-webkit-outer-spin-button,
+.quantityInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.quantityInput:hover {
+  border-color: var(--color-neutral-400);
+}
+
+.quantityInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-muted);
+}
+
+/** Quantity input on price change cards – align to the right of the card */
+.quantityInputCard {
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .productTableProduct {
@@ -813,6 +866,12 @@
 
 .searchAllCardButton {
   margin-top: var(--space-3);
+}
+
+/** Ensures 32px gap between "Looking for something new" and the bottom bar when scrolled to end */
+.spacerBeforeBottomBar {
+  height: 32px;
+  flex-shrink: 0;
 }
 
 .draftSummary {

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Modal } from "../Modal/Modal";
 import { Button, Heading } from "../index";
 import type { OrderLineItem, OrderDetail } from "../OrderDetailModal/OrderDetailModal";
@@ -68,9 +68,6 @@ export function CreateOrderModal({
   const [recentQuantities, setRecentQuantities] = useState<Record<number, number>>({});
   const [priceChangeQuantities, setPriceChangeQuantities] = useState<Record<string, number>>({});
   const [searchAddedItems, setSearchAddedItems] = useState<OrderLineItem[]>([]);
-  const [expandedStepper, setExpandedStepper] = useState<string | null>(null);
-  const stepperContainerRef = useRef<HTMLDivElement | null>(null);
-
   const isEditMode = open && editOrder != null;
 
   useEffect(() => {
@@ -89,20 +86,6 @@ export function CreateOrderModal({
 
   if (!open) return null;
 
-  useEffect(() => {
-    if (step !== "products" || !expandedStepper) return;
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        stepperContainerRef.current &&
-        !stepperContainerRef.current.contains(e.target as Node)
-      ) {
-        setExpandedStepper(null);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [step, expandedStepper]);
-
   function handleClose() {
     setStep("vendor");
     setSelectedVendor(null);
@@ -114,7 +97,6 @@ export function CreateOrderModal({
     setRecentQuantities({});
     setPriceChangeQuantities({});
     setSearchAddedItems([]);
-    setExpandedStepper(null);
     onClose();
   }
 
@@ -124,7 +106,6 @@ export function CreateOrderModal({
     setRecentQuantities({});
     setPriceChangeQuantities({});
     setSearchAddedItems([]);
-    setExpandedStepper(null);
     setStep("products");
   }
 
@@ -133,7 +114,6 @@ export function CreateOrderModal({
     setRecentQuantities({});
     setPriceChangeQuantities({});
     setSearchAddedItems([]);
-    setExpandedStepper(null);
     setStep("products");
   }
 
@@ -155,6 +135,15 @@ export function CreateOrderModal({
     });
   }
 
+  function setPriceChangeQuantity(id: string, quantity: number) {
+    setPriceChangeQuantities((prev) => {
+      const next = { ...prev };
+      if (quantity <= 0) delete next[id];
+      else next[id] = quantity;
+      return next;
+    });
+  }
+
   function setOrderLineItemQuantity(index: number, quantity: number) {
     if (quantity <= 0) {
       setOrderLineItems((prev) => prev.filter((_, i) => i !== index));
@@ -171,26 +160,25 @@ export function CreateOrderModal({
     setOrderLineItems((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function addProductToOrder(item: OrderLineItem) {
-    setOrderLineItems((prev) => [...prev, item]);
-  }
-
-  /** Remove one line item matching this product (for Edit order Quantity stepper) */
-  function removeOneFromOrder(product: CatalogProduct | PriceChangeProduct) {
-    setOrderLineItems((prev) => {
-      const idx = prev.findIndex(
-        (l) => l.productName === product.productName && l.unit === product.unit && l.unitPrice === product.unitPrice
-      );
-      if (idx === -1) return prev;
-      return prev.filter((_, i) => i !== idx);
-    });
-  }
-
   /** Count how many of this product are in orderLineItems (Edit order) */
   function getQuantityInOrder(product: CatalogProduct | PriceChangeProduct): number {
     return orderLineItems.filter(
       (l) => l.productName === product.productName && l.unit === product.unit && l.unitPrice === product.unitPrice
     ).length;
+  }
+
+  /** Set quantity in order for a product (Edit order – Add to order table) */
+  function setProductQuantityInOrder(product: CatalogProduct | PriceChangeProduct, quantity: number) {
+    const qty = Math.max(0, Math.floor(quantity));
+    setOrderLineItems((prev) => {
+      const rest = prev.filter(
+        (l) =>
+          !(l.productName === product.productName && l.unit === product.unit && l.unitPrice === product.unitPrice)
+      );
+      if (qty <= 0) return rest;
+      const toAdd = Array.from({ length: qty }, () => toLineItem(product, 1));
+      return [...rest, ...toAdd];
+    });
   }
 
   function handleReviewOrder() {
@@ -375,7 +363,7 @@ export function CreateOrderModal({
                       {orderLineItems.length === 0 ? (
                         <p className={styles.draftSummary}>No items. Add products from the sections below or search.</p>
                       ) : (
-                        <div className={styles.productTableWrap}>
+                        <div className={`${styles.productTableWrap} ${styles.orderItemsTableWrap}`}>
                           <table className={orderDetailStyles.table}>
                             <thead>
                               <tr>
@@ -392,41 +380,19 @@ export function CreateOrderModal({
                                 <tr key={`${line.productName}-${index}`}>
                                   <td className={orderDetailStyles.colProduct}>{line.productName}</td>
                                   <td className={orderDetailStyles.colRight}>
-                                    {expandedStepper === `order-${index}` ? (
-                                      <div
-                                        ref={stepperContainerRef}
-                                        className={styles.stepper}
-                                        role="group"
-                                        aria-label={`Quantity for ${line.productName}`}
-                                      >
-                                        <button
-                                          type="button"
-                                          className={styles.stepperBtn}
-                                          onClick={() => setOrderLineItemQuantity(index, line.quantity - 1)}
-                                          aria-label="Decrease quantity"
-                                        >
-                                          −
-                                        </button>
-                                        <span className={styles.stepperValue}>{line.quantity}</span>
-                                        <button
-                                          type="button"
-                                          className={styles.stepperBtn}
-                                          onClick={() => setOrderLineItemQuantity(index, line.quantity + 1)}
-                                          aria-label="Increase quantity"
-                                        >
-                                          +
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      <button
-                                        type="button"
-                                        className={styles.productRowPlusButton}
-                                        onClick={() => setExpandedStepper(`order-${index}`)}
-                                        aria-label={`${line.productName} quantity: ${line.quantity}, click to change`}
-                                      >
-                                        <span className={styles.productRowPlusButtonQuantity}>{line.quantity}</span>
-                                      </button>
-                                    )}
+                                    <input
+                                      type="number"
+                                      min={0}
+                                      step={1}
+                                      value={line.quantity}
+                                      onChange={(e) => {
+                                        const v = e.target.value;
+                                        const n = v === "" ? 0 : Math.max(0, Math.floor(Number(v)));
+                                        setOrderLineItemQuantity(index, n);
+                                      }}
+                                      className={styles.quantityInput}
+                                      aria-label={`Quantity for ${line.productName}`}
+                                    />
                                   </td>
                                   <td className={orderDetailStyles.colRight}>{line.unit}</td>
                                   <td className={orderDetailStyles.colRight}>{formatCurrency(line.unitPrice)}</td>
@@ -462,125 +428,53 @@ export function CreateOrderModal({
                             : "No products match your search."}
                         </p>
                       ) : (
-                        <div className={styles.productTableWrap}>
-                          <table className={styles.productTable}>
-                            <thead>
-                              <tr>
-                                <th className={styles.productTableColProduct}>Product</th>
-                                <th className={styles.productTableColDate}>Last ordered</th>
-                                <th className={styles.productTableColCost}>Price</th>
-                                <th className={styles.productTableColAction}>Quantity</th>
-                                <th className={styles.productTableColTotal}>Total</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {combinedAddToOrderProducts.map(({ key, product: p }) => {
-                                const priceDisp = p.priceDisplay ?? `${formatCurrency(p.unitPrice)}/${p.unit}`;
-                                const changePercent = p.changePercent ?? 0;
-                                const isIncrease = p.isIncrease ?? false;
-                                const qty = getQuantityInOrder(p);
-                                const lineTotal = qty * p.unitPrice;
-                                return (
-                                  <tr key={key}>
-                                    <td className={styles.productTableColProduct}>
-                                      <div className={styles.productTableProduct}>
-                                        {p.imageUrl ? (
-                                          <img src={p.imageUrl} alt="" className={styles.productTableImg} />
-                                        ) : (
-                                          <div className={styles.productTableImg} aria-hidden />
-                                        )}
-                                        <div className={styles.productTableProductText}>
-                                          <span className={styles.productTableName}>{p.productName}</span>
-                                          <span className={styles.productTableMeta}>
-                                            {selectedVendor.name} | {p.packerId ?? "—"}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </td>
-                                    <td className={styles.productTableColDate}>
-                                      <div className={styles.productTableDateBlock}>
-                                        <span className={styles.productTableDate}>
-                                          {p.lastOrderedDate ?? "—"}
-                                        </span>
-                                        {p.orderFrequency && (
-                                          <span className={styles.productTableFrequency}>
-                                            {p.orderFrequency}
-                                          </span>
-                                        )}
-                                      </div>
-                                    </td>
-                                    <td className={styles.productTableColCost}>
-                                      <div className={styles.productTablePriceBlock}>
-                                        <span className={styles.productTableCost}>{priceDisp}</span>
-                                        <span className={styles.productRowChangeMuted}>
-                                          {changePercent}% {isIncrease ? "increase" : "decrease"}
-                                        </span>
-                                      </div>
-                                    </td>
-                                    <td className={styles.productTableColAction}>
-                                      {qty === 0 ? (
-                                        <button
-                                          type="button"
-                                          className={styles.productRowPlusButton}
-                                          onClick={() => addProductToOrder(toLineItem(p, 1))}
-                                          aria-label={`Add ${p.productName} to order`}
-                                        >
-                                          +
-                                        </button>
-                                      ) : expandedStepper === `add-${key}` ? (
-                                        <div
-                                          ref={stepperContainerRef}
-                                          className={styles.stepper}
-                                          role="group"
-                                          aria-label={`Quantity for ${p.productName}`}
-                                        >
-                                          <button
-                                            type="button"
-                                            className={styles.stepperBtn}
-                                            onClick={() => removeOneFromOrder(p)}
-                                            aria-label="Decrease quantity"
-                                          >
-                                            −
-                                          </button>
-                                          <span className={styles.stepperValue}>{qty}</span>
-                                          <button
-                                            type="button"
-                                            className={styles.stepperBtn}
-                                            onClick={() => addProductToOrder(toLineItem(p, 1))}
-                                            aria-label="Increase quantity"
-                                          >
-                                            +
-                                          </button>
-                                        </div>
-                                      ) : (
-                                        <button
-                                          type="button"
-                                          className={styles.productRowPlusButton}
-                                          onClick={() => setExpandedStepper(`add-${key}`)}
-                                          aria-label={`${p.productName} quantity: ${qty}, click to change`}
-                                        >
-                                          <span className={styles.productRowPlusButtonQuantity}>{qty}</span>
-                                        </button>
-                                      )}
-                                    </td>
-                                    <td className={styles.productTableColTotal}>
-                                      <div className={styles.productTablePriceBlock}>
-                                        <span className={styles.productTableCost}>
-                                          {qty === 0 ? "—" : formatCurrency(lineTotal)}
-                                        </span>
-                                        {qty > 0 && (
-                                          <span className={styles.productRowChangeMuted}>
-                                            {qty} {p.unit}
-                                          </span>
-                                        )}
-                                      </div>
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
+                        <ul className={styles.priceChangeCardGrid} role="list">
+                          {combinedAddToOrderProducts.map(({ key, product: p }) => {
+                            const qty = getQuantityInOrder(p);
+                            const priceDisp = p.priceDisplay ?? `${formatCurrency(p.unitPrice)}/${p.unit}`;
+                            const changePercent = p.changePercent ?? 0;
+                            const isIncrease = p.isIncrease ?? false;
+                            const priceLine =
+                              changePercent != null && changePercent !== 0
+                                ? `${priceDisp} | ${changePercent}% ${isIncrease ? "increase" : "decrease"}`
+                                : priceDisp;
+                            return (
+                              <li key={key} className={styles.priceChangeCard}>
+                                <div className={styles.priceChangeCardInner}>
+                                  {p.imageUrl ? (
+                                    <img
+                                      src={p.imageUrl}
+                                      alt=""
+                                      className={styles.priceChangeCardImg}
+                                    />
+                                  ) : (
+                                    <div className={styles.priceChangeCardImgPlaceholder} aria-hidden />
+                                  )}
+                                  <div className={styles.priceChangeCardBody}>
+                                    <span className={styles.priceChangeCardMeta}>
+                                      {p.packerId ?? "—"}
+                                    </span>
+                                    <span className={styles.priceChangeCardName}>{p.productName}</span>
+                                    <span className={styles.priceChangeCardPriceLine}>{priceLine}</span>
+                                  </div>
+                                </div>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  step={1}
+                                  value={qty === 0 ? "" : qty}
+                                  onChange={(e) => {
+                                    const v = e.target.value;
+                                    const n = v === "" ? 0 : Math.max(0, Math.floor(Number(v)));
+                                    setProductQuantityInOrder(p, n);
+                                  }}
+                                  className={`${styles.quantityInput} ${styles.quantityInputCard}`}
+                                  aria-label={`Quantity for ${p.productName}`}
+                                />
+                              </li>
+                            );
+                          })}
+                        </ul>
                       )}
                     </section>
                   ) : (
@@ -600,30 +494,46 @@ export function CreateOrderModal({
                           </p>
                         ) : (
                           <ul className={styles.priceChangeCardGrid} role="list">
-                            {filteredPriceChanges.map((p) => (
-                              <li key={p.id} className={styles.priceChangeCard}>
-                                <div className={styles.priceChangeCardInner}>
-                                  {p.imageUrl ? (
-                                    <img
-                                      src={p.imageUrl}
-                                      alt=""
-                                      className={styles.priceChangeCardImg}
-                                    />
-                                  ) : (
-                                    <div className={styles.priceChangeCardImgPlaceholder} aria-hidden />
-                                  )}
-                                  <div className={styles.priceChangeCardBody}>
-                                    <span className={styles.priceChangeCardMeta}>
-                                      {p.packerId}
-                                    </span>
-                                    <span className={styles.priceChangeCardName}>{p.productName}</span>
-                                    <span className={styles.priceChangeCardPriceLine}>
-                                      {p.priceDisplay} | {p.changePercent}% {p.isIncrease ? "increase" : "decrease"}
-                                    </span>
+                            {filteredPriceChanges.map((p) => {
+                              const qty = priceChangeQuantities[p.id] ?? 0;
+                              return (
+                                <li key={p.id} className={styles.priceChangeCard}>
+                                  <div className={styles.priceChangeCardInner}>
+                                    {p.imageUrl ? (
+                                      <img
+                                        src={p.imageUrl}
+                                        alt=""
+                                        className={styles.priceChangeCardImg}
+                                      />
+                                    ) : (
+                                      <div className={styles.priceChangeCardImgPlaceholder} aria-hidden />
+                                    )}
+                                    <div className={styles.priceChangeCardBody}>
+                                      <span className={styles.priceChangeCardMeta}>
+                                        {p.packerId}
+                                      </span>
+                                      <span className={styles.priceChangeCardName}>{p.productName}</span>
+                                      <span className={styles.priceChangeCardPriceLine}>
+                                        {p.priceDisplay} | {p.changePercent}% {p.isIncrease ? "increase" : "decrease"}
+                                      </span>
+                                    </div>
                                   </div>
-                                </div>
-                              </li>
-                            ))}
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    step={1}
+                                    value={qty === 0 ? "" : qty}
+                                    onChange={(e) => {
+                                      const v = e.target.value;
+                                      const n = v === "" ? 0 : Math.max(0, Math.floor(Number(v)));
+                                      setPriceChangeQuantity(p.id, n);
+                                    }}
+                                    className={`${styles.quantityInput} ${styles.quantityInputCard}`}
+                                    aria-label={`Quantity for ${p.productName}`}
+                                  />
+                                </li>
+                              );
+                            })}
                           </ul>
                         )}
                       </section>
@@ -699,50 +609,19 @@ export function CreateOrderModal({
                                         </div>
                                       </td>
                                       <td className={styles.productTableColAction}>
-                                        {qty === 0 ? (
-                                          <button
-                                            type="button"
-                                            className={styles.productRowPlusButton}
-                                            onClick={() => setRecentQuantity(origIndex, 1)}
-                                            aria-label={`Add ${p.productName} to order`}
-                                          >
-                                            +
-                                          </button>
-                                        ) : expandedStepper === `recent-${origIndex}` ? (
-                                          <div
-                                            ref={stepperContainerRef}
-                                            className={styles.stepper}
-                                            role="group"
-                                            aria-label={`Quantity for ${p.productName}`}
-                                          >
-                                            <button
-                                              type="button"
-                                              className={styles.stepperBtn}
-                                              onClick={() => setRecentQuantity(origIndex, qty - 1)}
-                                              aria-label="Decrease quantity"
-                                            >
-                                              −
-                                            </button>
-                                            <span className={styles.stepperValue}>{qty}</span>
-                                            <button
-                                              type="button"
-                                              className={styles.stepperBtn}
-                                              onClick={() => setRecentQuantity(origIndex, qty + 1)}
-                                              aria-label="Increase quantity"
-                                            >
-                                              +
-                                            </button>
-                                          </div>
-                                        ) : (
-                                          <button
-                                            type="button"
-                                            className={styles.productRowPlusButton}
-                                            onClick={() => setExpandedStepper(`recent-${origIndex}`)}
-                                            aria-label={`${p.productName} quantity: ${qty}, click to change`}
-                                          >
-                                            <span className={styles.productRowPlusButtonQuantity}>{qty}</span>
-                                          </button>
-                                        )}
+                                        <input
+                                          type="number"
+                                          min={0}
+                                          step={1}
+                                          value={qty === 0 ? "" : qty}
+                                          onChange={(e) => {
+                                            const v = e.target.value;
+                                            const n = v === "" ? 0 : Math.max(0, Math.floor(Number(v)));
+                                            setRecentQuantity(origIndex, n);
+                                          }}
+                                          className={styles.quantityInput}
+                                          aria-label={`Quantity for ${p.productName}`}
+                                        />
                                       </td>
                                       <td className={styles.productTableColTotal}>
                                         <div className={styles.productTablePriceBlock}>
@@ -788,6 +667,7 @@ export function CreateOrderModal({
                       Search all products
                     </Button>
                   </div>
+                  <div className={styles.spacerBeforeBottomBar} aria-hidden />
                 </div>
               </div>
 
@@ -815,38 +695,40 @@ export function CreateOrderModal({
           {step === "preview" && selectedVendor && (
             <>
               <header className={orderDetailStyles.header}>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  shape="circle"
-                  onClick={handleBackToProducts}
-                  aria-label="Back to products"
-                  className={orderDetailStyles.closeButton}
-                >
-                  <img src={BACK_ICON_SRC} alt="" className={orderDetailStyles.closeIcon} />
-                </Button>
-                <Heading as="h1" className={orderDetailStyles.title}>
-                  {isEditMode ? "Edit order" : "Create order"} – {selectedVendor.name}
-                </Heading>
-                <div style={{ display: "flex", gap: "var(--space-2)" }}>
+                <div className={orderDetailStyles.headerInner}>
                   <Button
+                    type="button"
                     variant="secondary"
-                    onClick={() => {
-                      onSaveDraft?.(selectedVendor, draftLineItems, editOrder?.orderId);
-                      handleClose();
-                    }}
+                    shape="circle"
+                    onClick={handleBackToProducts}
+                    aria-label="Back to products"
+                    className={orderDetailStyles.closeButton}
                   >
-                    Save draft
+                    <img src={BACK_ICON_SRC} alt="" className={orderDetailStyles.closeIcon} />
                   </Button>
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      onSend?.(selectedVendor, draftLineItems, editOrder?.orderId);
-                      handleClose();
-                    }}
-                  >
-                    Send
-                  </Button>
+                  <Heading as="h1" className={orderDetailStyles.title}>
+                    {isEditMode ? "Edit order" : "Create order"} – {selectedVendor.name}
+                  </Heading>
+                  <div style={{ display: "flex", gap: "var(--space-2)" }}>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        onSaveDraft?.(selectedVendor, draftLineItems, editOrder?.orderId);
+                        handleClose();
+                      }}
+                    >
+                      Save draft
+                    </Button>
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        onSend?.(selectedVendor, draftLineItems, editOrder?.orderId);
+                        handleClose();
+                      }}
+                    >
+                      Send
+                    </Button>
+                  </div>
                 </div>
               </header>
               <div className={orderDetailStyles.contentScroll}>
