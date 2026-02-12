@@ -429,7 +429,7 @@ export function CreateOrderModal({
                         </p>
                       ) : (
                         <ul className={styles.priceChangeCardGrid} role="list">
-                          {combinedAddToOrderProducts.map(({ key, product: p }) => {
+                          {combinedAddToOrderProducts.slice(0, 6).map(({ key, product: p }) => {
                             const qty = getQuantityInOrder(p);
                             const priceDisp = p.priceDisplay ?? `${formatCurrency(p.unitPrice)}/${p.unit}`;
                             const changePercent = p.changePercent ?? 0;

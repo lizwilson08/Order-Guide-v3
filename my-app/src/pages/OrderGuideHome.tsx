@@ -206,21 +206,40 @@ interface PastOrderRow {
   orderId: number;
   status: string;
   vendor: string;
+  productCount: number;
   total: string;
 }
 const PAST_ORDERS_DUMMY: PastOrderRow[] = [
-  { id: 104, orderId: 104, status: "Completed", vendor: "Sysco", total: "$1,289.00" },
-  { id: 103, orderId: 103, status: "Completed", vendor: "US Foods", total: "$938.00" },
-  { id: 102, orderId: 102, status: "Cancelled", vendor: "Meat Market", total: "$445.00" },
-  { id: 101, orderId: 101, status: "Completed", vendor: "Farmer Brothers", total: "$612.50" },
-  { id: 100, orderId: 100, status: "Completed", vendor: "Fishmonger", total: "$320.00" },
+  { id: 104, orderId: 104, status: "Completed", vendor: "Sysco", productCount: 3, total: "$1,289.00" },
+  { id: 103, orderId: 103, status: "Completed", vendor: "US Foods", productCount: 3, total: "$938.00" },
+  { id: 102, orderId: 102, status: "Cancelled", vendor: "Meat Market", productCount: 2, total: "$445.00" },
+  { id: 101, orderId: 101, status: "Completed", vendor: "Farmer Brothers", productCount: 2, total: "$612.50" },
+  { id: 100, orderId: 100, status: "Completed", vendor: "Fishmonger", productCount: 2, total: "$320.00" },
 ];
 
 const PAST_ORDERS_COLUMNS: Column<PastOrderRow>[] = [
   { key: "orderId", header: "Order" },
   { key: "status", header: "Status" },
   { key: "vendor", header: "Vendor" },
+  { key: "productCount", header: "Products" },
   { key: "total", header: "Total" },
+  {
+    key: "actions",
+    header: "",
+    render: (row) => (
+      <button
+        type="button"
+        className={styles.pastOrderRowActionButton}
+        onClick={(e) => {
+          e.stopPropagation();
+          // TODO: open menu or handle action
+        }}
+        aria-label="More options"
+      >
+        <img src={MORE_ICON_SRC} alt="" className={styles.pastOrderRowActionIcon} />
+      </button>
+    ),
+  },
 ];
 
 /** Dummy order details for full-page order modal (active + past orders). Order numbers 100–104 = past (oldest first), 105–107 = active. */

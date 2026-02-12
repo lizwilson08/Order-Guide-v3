@@ -3,6 +3,9 @@ import { Button, Heading, Badge } from "../index";
 import styles from "./OrderDetailModal.module.css";
 
 const CLOSE_ICON_SRC = "/images/icons/X.png";
+const EDIT_ICON_SRC = "/images/icons/pencil.png";
+const DOWNLOAD_ICON_SRC = "/images/icons/download.png";
+const SEND_ICON_SRC = "/images/icons/Send.png";
 
 export interface OrderLineItem {
   productName: string;
@@ -62,14 +65,38 @@ export function OrderDetailModal({ open, onClose, order, onEdit }: OrderDetailMo
             <Heading as="h1" className={styles.title}>
               {orderIdDisplay}
             </Heading>
-            <div style={{ display: "flex", gap: "var(--space-2)" }}>
+            <div className={styles.headerActions}>
               {isDraft && onEdit && order && (
-                <Button variant="secondary" onClick={() => onEdit(order)}>
-                  Edit
+                <Button
+                  type="button"
+                  variant="secondary"
+                  shape="circle"
+                  onClick={() => onEdit(order)}
+                  aria-label="Edit order"
+                  className={styles.headerIconButton}
+                >
+                  <img src={EDIT_ICON_SRC} alt="" className={styles.headerIcon} />
                 </Button>
               )}
-              <Button variant="secondary" onClick={() => {}}>
-                Send
+              <Button
+                type="button"
+                variant="secondary"
+                shape="circle"
+                onClick={() => {}}
+                aria-label="Download"
+                className={styles.headerIconButton}
+              >
+                <img src={DOWNLOAD_ICON_SRC} alt="" className={styles.headerIcon} />
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                shape="circle"
+                onClick={() => {}}
+                aria-label="Send"
+                className={styles.headerIconButton}
+              >
+                <img src={SEND_ICON_SRC} alt="" className={styles.headerIcon} />
               </Button>
             </div>
           </div>
