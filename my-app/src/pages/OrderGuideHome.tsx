@@ -768,7 +768,7 @@ export function OrderGuideHome() {
                     ingredientName={item.ingredientName}
                     ingredientImageUrl={getIngredientImageUrl(item.ingredientName)}
                     products={item.products}
-                    productIdLabel={(row) => `ID ${row.id}`}
+                    productIdLabel={(row) => `${row.id}`}
                     onEdit={() => {
                       const g = allGroups.find((x) => x.ingredientName === item.ingredientName);
                       if (g) {
@@ -794,7 +794,7 @@ export function OrderGuideHome() {
                       ingredientName={item.ingredient.name}
                       ingredientImageUrl={getIngredientImageUrl(item.ingredient.name)}
                       products={item.products}
-                      productIdLabel={(row) => `ID ${row.id}`}
+                      productIdLabel={(row) => `${row.id}`}
                       onEdit={() => {
                         setEditingGroupId(String(item.ingredient.id));
                         setEditGroupSource("main");

@@ -155,15 +155,6 @@ export function CreateOrderModal({
     });
   }
 
-  function setPriceChangeQuantity(id: string, quantity: number) {
-    setPriceChangeQuantities((prev) => {
-      const next = { ...prev };
-      if (quantity <= 0) delete next[id];
-      else next[id] = quantity;
-      return next;
-    });
-  }
-
   function setOrderLineItemQuantity(index: number, quantity: number) {
     if (quantity <= 0) {
       setOrderLineItems((prev) => prev.filter((_, i) => i !== index));
@@ -232,11 +223,6 @@ export function CreateOrderModal({
       : recentProducts
           .map((_, i) => i)
           .filter((i) => recentProducts[i].productName.toLowerCase().includes(q));
-  const productsStepItemCount = isEditMode
-    ? orderLineItems.length
-    : Object.values(recentQuantities).reduce((a, b) => a + b, 0) +
-      Object.values(priceChangeQuantities).reduce((a, b) => a + b, 0) +
-      searchAddedItems.length;
   const total = draftLineItems.reduce((sum, line) => sum + line.lineTotal, 0);
 
   /** Subtotal for the products step (current cart), and line count for "X products" */
@@ -273,17 +259,19 @@ export function CreateOrderModal({
           {step === "vendor" && (
             <>
               <header className={styles.header}>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  shape="circle"
-                  onClick={handleClose}
-                  aria-label="Close"
-                  className={styles.closeButton}
-                >
-                  <img src={CLOSE_ICON_SRC} alt="" className={styles.closeIcon} />
-                </Button>
-                <div className={styles.headerRight} aria-hidden />
+                <div className={styles.headerInner}>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    shape="circle"
+                    onClick={handleClose}
+                    aria-label="Close"
+                    className={styles.closeButton}
+                  >
+                    <img src={CLOSE_ICON_SRC} alt="" className={styles.closeIcon} />
+                  </Button>
+                  <div className={styles.headerRight} aria-hidden />
+                </div>
               </header>
               <div className={styles.contentScroll}>
                 <div className={styles.vendorContent}>
@@ -315,26 +303,28 @@ export function CreateOrderModal({
           {step === "products" && selectedVendor && (
             <>
               <header className={styles.header}>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  shape="circle"
-                  onClick={handleClose}
-                  aria-label="Close"
-                  className={styles.closeButton}
-                >
-                  <img src={CLOSE_ICON_SRC} alt="" className={styles.closeIcon} />
-                </Button>
-                <Heading as="h1" className={styles.title}>
-                  {isEditMode ? "Edit order" : "Create order"}
-                </Heading>
-                <Button
-                  variant="primary"
-                  onClick={handleReviewOrder}
-                  disabled={productsStepLineCount === 0}
-                >
-                  Review order
-                </Button>
+                <div className={styles.headerInner}>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    shape="circle"
+                    onClick={handleClose}
+                    aria-label="Close"
+                    className={styles.closeButton}
+                  >
+                    <img src={CLOSE_ICON_SRC} alt="" className={styles.closeIcon} />
+                  </Button>
+                  <Heading as="h1" className={styles.title}>
+                    {isEditMode ? "Edit order" : "Create order"}
+                  </Heading>
+                  <Button
+                    variant="primary"
+                    onClick={handleReviewOrder}
+                    disabled={productsStepLineCount === 0}
+                  >
+                    Review order
+                  </Button>
+                </div>
               </header>
               <div className={styles.contentScroll}>
                 <div className={styles.productsContent}>
@@ -502,7 +492,7 @@ export function CreateOrderModal({
                                         <div className={styles.productTableProductText}>
                                           <span className={styles.productTableName}>{p.productName}</span>
                                           <span className={styles.productTableMeta}>
-                                            {selectedVendor.name} | ID {p.packerId ?? "—"}
+                                            {selectedVendor.name} | {p.packerId ?? "—"}
                                           </span>
                                         </div>
                                       </div>
@@ -624,7 +614,7 @@ export function CreateOrderModal({
                                   )}
                                   <div className={styles.priceChangeCardBody}>
                                     <span className={styles.priceChangeCardMeta}>
-                                      ID {p.packerId}
+                                      {p.packerId}
                                     </span>
                                     <span className={styles.priceChangeCardName}>{p.productName}</span>
                                     <span className={styles.priceChangeCardPriceLine}>
@@ -683,7 +673,7 @@ export function CreateOrderModal({
                                           <div className={styles.productTableProductText}>
                                             <span className={styles.productTableName}>{p.productName}</span>
                                             <span className={styles.productTableMeta}>
-                                              {selectedVendor.name} | ID {p.packerId ?? "—"}
+                                              {selectedVendor.name} | {p.packerId ?? "—"}
                                             </span>
                                           </div>
                                         </div>

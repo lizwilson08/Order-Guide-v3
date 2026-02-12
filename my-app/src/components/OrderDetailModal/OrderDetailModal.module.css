@@ -5,15 +5,21 @@
   min-height: 0;
 }
 
-/* Full-width header */
+/* Full viewport width header (break out of any constrained parent) */
 .header {
-  width: 100%;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
   padding: 24px 24px 40px;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .closeButton {

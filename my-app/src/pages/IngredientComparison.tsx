@@ -67,7 +67,7 @@ export function IngredientComparison() {
         <ProductComparisonGroup
           ingredientName={ingredientName}
           products={products}
-          productIdLabel={(row) => `ID ${row.id}`}
+          productIdLabel={(row) => `${row.id}`}
           onProductAction={() => {}}
           selectedProductIds={selectedProductIds}
           onToggleProduct={toggleProduct}
